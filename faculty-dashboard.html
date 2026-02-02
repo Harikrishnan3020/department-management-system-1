@@ -219,6 +219,7 @@
                 <div class="section-card">
                     <div class="section-header">
                         <h2 class="section-title">Student Tables</h2>
+                        <a href="student-profile.html" class="btn-primary">View All Profiles</a>
                     </div>
                     <table>
                         <thead>
@@ -231,19 +232,19 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
+                            <tr onclick="window.location='student-profile.html?id=CS2024001'" style="cursor:pointer;">
                                 <td>CS2024001</td>
                                 <td>John Doe</td>
                                 <td>CS101</td>
                                 <td>92%</td>
-                                <td><button class="btn-view">View</button></td>
+                                <td><a href="student-profile.html?id=CS2024001" class="btn-view">View Profile</a></td>
                             </tr>
-                            <tr>
+                            <tr onclick="window.location='student-profile.html?id=CS2024002'" style="cursor:pointer;">
                                 <td>CS2024002</td>
                                 <td>Jane Smith</td>
                                 <td>CS101</td>
                                 <td>88%</td>
-                                <td><button class="btn-view">View</button></td>
+                                <td><a href="student-profile.html?id=CS2024002" class="btn-view">View Profile</a></td>
                             </tr>
                         </tbody>
                     </table>
