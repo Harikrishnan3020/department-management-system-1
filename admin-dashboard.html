@@ -326,7 +326,7 @@
                 <div class="table-section">
                     <div class="table-header">
                         <h2 class="table-title">Student Details</h2>
-                        <button class="btn-primary" onclick="alert('View all students')">View All Students</button>
+                        <a href="student-profile.html" class="btn-primary">View All Students</a>
                     </div>
                     <table>
                         <thead>
@@ -335,18 +335,44 @@
                                 <th>Name</th>
                                 <th>Department</th>
                                 <th>Year</th>
+                                <th>CGPA</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
+                            <tr onclick="window.location='student-profile.html?id=CS2024001'" style="cursor:pointer;">
                                 <td>CS2024001</td>
                                 <td>John Doe</td>
                                 <td>CSE</td>
                                 <td>2nd Year</td>
+                                <td><span style="color:#10b981;font-weight:600;">8.45</span></td>
                                 <td>
                                     <div class="action-buttons">
-                                        <button class="btn-view">View Details</button>
+                                        <a href="student-profile.html?id=CS2024001" class="btn-view">View Profile</a>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr onclick="window.location='student-profile.html?id=CS2024002'" style="cursor:pointer;">
+                                <td>CS2024002</td>
+                                <td>Jane Smith</td>
+                                <td>CSE</td>
+                                <td>2nd Year</td>
+                                <td><span style="color:#10b981;font-weight:600;">8.92</span></td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <a href="student-profile.html?id=CS2024002" class="btn-view">View Profile</a>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr onclick="window.location='student-profile.html?id=EC2024001'" style="cursor:pointer;">
+                                <td>EC2024001</td>
+                                <td>Robert Wilson</td>
+                                <td>ECE</td>
+                                <td>2nd Year</td>
+                                <td><span style="color:#10b981;font-weight:600;">8.12</span></td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <a href="student-profile.html?id=EC2024001" class="btn-view">View Profile</a>
                                     </div>
                                 </td>
                             </tr>
