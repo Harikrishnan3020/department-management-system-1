@@ -1080,16 +1080,24 @@ body {
 .team-showcase {
     display: flex;
     justify-content: center;
+    flex-wrap: wrap;
+    gap: 24px;
 }
 
 .team-card {
     text-align: center;
     padding: 40px;
-    max-width: 400px;
+    max-width: 320px;
     width: 100%;
     background: var(--surface-light);
     border: 1px solid var(--surface-border);
     border-radius: 24px;
+    transition: all 0.3s ease;
+}
+
+.team-card:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.04);
 }
 
 .team-avatar {
@@ -1220,8 +1228,8 @@ body {
 /* Scroll Reveal */
 .hidden-element {
     opacity: 0;
-    transform: translateY(40px);
-    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateY(20px);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .revealed-element {
