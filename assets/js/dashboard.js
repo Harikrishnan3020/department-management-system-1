@@ -94,3 +94,11 @@ window.addEventListener('DOMContentLoaded', function () {
         window.location.href = 'login.html';
     }
 });
+
+
+function logout() {
+    if (confirm('Are you sure you want to logout?')) {
+        localStorage.removeItem('userRole');
+        window.location.href = 'login.html';
+    }
+}

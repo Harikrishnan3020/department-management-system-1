@@ -157,7 +157,7 @@ function applyRoleBasedUI() {
 
     // Update portal subtitle and dashboard link
     const subtitleElement = document.getElementById('portalSubtitle');
-    const dashboardLink = document.querySelector('.nav-link[href="index.html"]');
+    const dashboardLink = document.querySelector('.nav-link[href="dashboard.html"]');
 
     if (role === 'hod') {
         subtitleElement.textContent = 'Admin Portal';

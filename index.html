@@ -4,304 +4,521 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description"
-        content="Department Management System - A comprehensive platform for managing academic activities.">
-    <title>Department Management System</title>
+    <title>DMS | Premium Portfolio</title>
+    <meta name="description" content="Department Management System - Smart Academic Administration Platform">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/index.css">
+    <link rel="stylesheet" href="assets/css/portfolio.css">
 </head>
 
 <body>
-    <!-- Mobile Menu Toggle -->
-    <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+    <!-- Background Effects -->
+    <div class="glow-bg glow-1"></div>
+    <div class="glow-bg glow-2"></div>
+    <div class="glow-bg glow-3"></div>
 
-    <!-- Overlay -->
-    <div class="overlay" onclick="toggleSidebar()"></div>
-
-    <!-- Sidebar -->
-    <aside class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <div class="sidebar-title">DMS</div>
-            <div class="sidebar-subtitle">Management Portal</div>
-        </div>
-        <nav>
-            <ul class="nav-menu">
-                <li class="nav-item">
-                    <a href="#" class="nav-link active">
-                        <span class="nav-icon">📊</span>
-                        Dashboard
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <span class="nav-icon">🏢</span>
-                        Departments
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <span class="nav-icon">👨‍🏫</span>
-                        Faculty
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <span class="nav-icon">👨‍🎓</span>
-                        Students
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <span class="nav-icon">📚</span>
-                        Courses
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <span class="nav-icon">✅</span>
-                        Attendance
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <span class="nav-icon">📈</span>
-                        Results
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <span class="nav-icon">⚙️</span>
-                        Settings
-                    </a>
-                </li>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" class="nav-logo">
+                <span class="logo-icon">🎓</span>
+                DMS
+            </a>
+            <ul class="nav-links">
+                <li><a href="#about">About</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#architecture">Architecture</a></li>
+                <li><a href="#preview">Preview</a></li>
+                <li><a href="#tech">Tech Stack</a></li>
+                <li><a href="#aiml">AIML</a></li>
             </ul>
-        </nav>
-    </aside>
-
-    <!-- Main Content -->
-    <main class="main-content">
-        <!-- Header -->
-        <header class="header">
-            <h1 class="header-title">Department Management System</h1>
-            <div class="header-actions">
-                <button class="btn-primary">+ Add Department</button>
+            <div class="nav-actions">
+                <a href="login.html" class="btn-primary">Live Demo</a>
             </div>
-        </header>
+        </div>
+    </nav>
 
-        <!-- Dashboard Content -->
-        <div class="dashboard-content">
-            <!-- Welcome Banner with Role-Based Navigation -->
-            <div
-                style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 32px; border-radius: 16px; color: #fff; margin-bottom: 32px;">
-                <h2 style="font-size: 24px; font-weight: 700; margin-bottom: 12px;" id="welcomeText">Welcome to DMS!
-                </h2>
-                <p style="font-size: 16px; opacity: 0.95; margin-bottom: 20px;">Quick access to your personalized
-                    dashboard</p>
-                <div style="display: flex; gap: 12px; flex-wrap: wrap;" id="quickAccessButtons">
-                    <!-- Buttons will be added dynamically based on role -->
-                </div>
+    <!-- Hero Section -->
+    <section class="hero hidden-element">
+        <div class="hero-content">
+            <div class="badge">Next Generation Administration</div>
+            <h1 class="hero-title">Department Management System</h1>
+            <p class="hero-subtitle">
+                A smart, unified, and elegant platform for managing academics, student performance, and administrative
+                workflows in modern educational institutions.
+            </p>
+            <div class="hero-cta">
+                <a href="login.html" class="btn-primary large">View Live Demo</a>
+                <a href="#" class="btn-secondary large">View GitHub</a>
             </div>
-
-            <!-- Stats Cards -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon">🏢</div>
-                    <div class="stat-label">Total Departments</div>
-                    <div class="stat-value">12</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">👨‍🏫</div>
-                    <div class="stat-label">Total Faculty</div>
-                    <div class="stat-value">156</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">👨‍🎓</div>
-                    <div class="stat-label">Total Students</div>
-                    <div class="stat-value">2,847</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">📚</div>
-                    <div class="stat-label">Total Courses</div>
-                    <div class="stat-value">89</div>
-                </div>
-            </div>
-
-            <!-- Departments Table -->
-            <div class="table-section">
-                <div class="table-header">
-                    <h2 class="table-title">Departments Overview</h2>
-                    <div class="search-box">
-                        <span>🔍</span>
-                        <input type="text" placeholder="Search departments...">
+            <div class="hero-preview">
+                <div class="glass-frame">
+                    <div class="frame-content">
+                        <!-- Background embedded video for realism -->
+                        <video autoplay loop muted playsinline class="hero-bg-video">
+                            <source src="The_aiml_hod_1080p_202601221036.mp4" type="video/mp4">
+                        </video>
+                        <div class="mock-dash hero-mock-dash">
+                            <div class="mock-sidebar">
+                                <div class="ms-logo">🎓 DMS Admin</div>
+                                <div class="ms-menu">
+                                    <div class="ms-item active"><span class="ms-icon">📊</span> Analytics</div>
+                                    <div class="ms-item"><span class="ms-icon">👥</span> Student Roster</div>
+                                    <div class="ms-item"><span class="ms-icon">📈</span> Academics</div>
+                                    <div class="ms-item"><span class="ms-icon">👨‍🏫</span> Faculty Base</div>
+                                </div>
+                            </div>
+                            <div class="mock-main">
+                                <div class="mock-header">
+                                    <div class="mh-title">Live Tracking</div>
+                                    <div class="mh-user">
+                                        <div class="mh-avatar">H</div>
+                                    </div>
+                                </div>
+                                <div class="mock-grid">
+                                    <div class="mock-card">
+                                        <div class="mc-icon">👨‍🎓</div>
+                                        <div class="mc-info">
+                                            <div class="mc-val">1,250</div>
+                                            <div class="mc-label">Enrolled Students</div>
+                                        </div>
+                                    </div>
+                                    <div class="mock-card">
+                                        <div class="mc-icon">☑️</div>
+                                        <div class="mc-info">
+                                            <div class="mc-val">98.5%</div>
+                                            <div class="mc-label">Today's Attendance</div>
+                                        </div>
+                                    </div>
+                                    <div class="mock-card">
+                                        <div class="mc-icon">⭐</div>
+                                        <div class="mc-info">
+                                            <div class="mc-val">8.4</div>
+                                            <div class="mc-label">Avg Dept CGPA</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mock-table">
+                                    <div class="mt-header">Recent Live Check-ins</div>
+                                    <div class="mt-row">
+                                        <div class="mt-cell">Aarthi S</div>
+                                        <div class="mt-cell">24UAM101</div>
+                                        <div class="mt-cell"><span class="mt-badge success">Present (08:50 AM)</span>
+                                        </div>
+                                    </div>
+                                    <div class="mt-row">
+                                        <div class="mt-cell">Abishek TV</div>
+                                        <div class="mt-cell">24UAM102</div>
+                                        <div class="mt-cell"><span class="mt-badge warning">Late (09:12 AM)</span></div>
+                                    </div>
+                                    <div class="mt-row">
+                                        <div class="mt-cell">Abishek S</div>
+                                        <div class="mt-cell">24UAM103</div>
+                                        <div class="mt-cell"><span class="mt-badge success">Present (08:55 AM)</span>
+                                        </div>
+                                    </div>
+                                    <div class="mt-row">
+                                        <div class="mt-cell">MEERASOUNDHARYA R</div>
+                                        <div class="mt-cell">24UAM130</div>
+                                        <div class="mt-cell"><span class="mt-badge danger">Absent</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Department ID</th>
-                                <th>Department Name</th>
-                                <th>HOD Name</th>
-                                <th>Faculty Count</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td class="dept-id">DEPT-001</td>
-                                <td class="dept-name">Computer Science & Engineering</td>
-                                <td>Dr. Rajesh Kumar</td>
-                                <td><span class="badge">24 Faculty</span></td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="btn-edit">Edit</button>
-                                        <button class="btn-delete">Delete</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="dept-id">DEPT-002</td>
-                                <td class="dept-name">Electronics & Communication</td>
-                                <td>Dr. Priya Sharma</td>
-                                <td><span class="badge">18 Faculty</span></td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="btn-edit">Edit</button>
-                                        <button class="btn-delete">Delete</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="dept-id">DEPT-003</td>
-                                <td class="dept-name">Mechanical Engineering</td>
-                                <td>Dr. Arun Patel</td>
-                                <td><span class="badge">16 Faculty</span></td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="btn-edit">Edit</button>
-                                        <button class="btn-delete">Delete</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="dept-id">DEPT-004</td>
-                                <td class="dept-name">Civil Engineering</td>
-                                <td>Dr. Sunita Reddy</td>
-                                <td><span class="badge">14 Faculty</span></td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="btn-edit">Edit</button>
-                                        <button class="btn-delete">Delete</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="dept-id">DEPT-005</td>
-                                <td class="dept-name">Electrical Engineering</td>
-                                <td>Dr. Vikram Singh</td>
-                                <td><span class="badge">15 Faculty</span></td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="btn-edit">Edit</button>
-                                        <button class="btn-delete">Delete</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="dept-id">DEPT-006</td>
-                                <td class="dept-name">Information Technology</td>
-                                <td>Dr. Meera Iyer</td>
-                                <td><span class="badge">20 Faculty</span></td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="btn-edit">Edit</button>
-                                        <button class="btn-delete">Delete</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="dept-id">DEPT-007</td>
-                                <td class="dept-name">Chemical Engineering</td>
-                                <td>Dr. Anand Gupta</td>
-                                <td><span class="badge">12 Faculty</span></td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="btn-edit">Edit</button>
-                                        <button class="btn-delete">Delete</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="dept-id">DEPT-008</td>
-                                <td class="dept-name">Biotechnology</td>
-                                <td>Dr. Kavita Nair</td>
-                                <td><span class="badge">10 Faculty</span></td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="btn-edit">Edit</button>
-                                        <button class="btn-delete">Delete</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="dept-id">DEPT-009</td>
-                                <td class="dept-name">Mathematics</td>
-                                <td>Dr. Ramesh Verma</td>
-                                <td><span class="badge">8 Faculty</span></td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="btn-edit">Edit</button>
-                                        <button class="btn-delete">Delete</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="dept-id">DEPT-010</td>
-                                <td class="dept-name">Physics</td>
-                                <td>Dr. Lakshmi Menon</td>
-                                <td><span class="badge">9 Faculty</span></td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="btn-edit">Edit</button>
-                                        <button class="btn-delete">Delete</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="dept-id">DEPT-011</td>
-                                <td class="dept-name">Chemistry</td>
-                                <td>Dr. Suresh Rao</td>
-                                <td><span class="badge">7 Faculty</span></td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="btn-edit">Edit</button>
-                                        <button class="btn-delete">Delete</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="dept-id">DEPT-012</td>
-                                <td class="dept-name">Management Studies</td>
-                                <td>Dr. Neha Kapoor</td>
-                                <td><span class="badge">13 Faculty</span></td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="btn-edit">Edit</button>
-                                        <button class="btn-delete">Delete</button>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="section hidden-element">
+        <div class="section-container">
+            <div class="two-column">
+                <div class="column-text">
+                    <h2 class="section-title">About The Project</h2>
+                    <p class="section-desc">
+                        Managing an entire academic department is historically plagued by fragmented tools, manual
+                        spreadsheets, and communication silos. DMS solves this by providing a unified, role-based
+                        architecture designed for clarity and speed.
+                    </p>
+                    <div class="about-grid">
+                        <div class="about-item">
+                            <div class="about-icon">👔</div>
+                            <div>
+                                <h4>Admin & HODs</h4>
+                                <p>Centralized oversight, analytics, and resource allocation.</p>
+                            </div>
+                        </div>
+                        <div class="about-item">
+                            <div class="about-icon">👨‍🏫</div>
+                            <div>
+                                <h4>Faculty</h4>
+                                <p>Effortless attendance, grading, and course management.</p>
+                            </div>
+                        </div>
+                        <div class="about-item">
+                            <div class="about-icon">👨‍🎓</div>
+                            <div>
+                                <h4>Students</h4>
+                                <p>Real-time progress tracking, timetables, and personalized insights.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="column-visual">
+                    <div class="glass-card visual-card">
+                        <div class="vc-header">
+                            <div>Live Student Distribution</div>
+                            <div class="vc-badge">Active DB</div>
+                        </div>
+
+                        <div class="vc-student-list">
+                            <div class="vc-student-item">
+                                <div class="vc-s-avatar">R</div>
+                                <div class="vc-s-info">
+                                    <div class="vc-s-name">RAMYA G</div>
+                                    <div class="vc-s-id">24UAM138 • Sec A</div>
+                                </div>
+                                <div class="vc-s-score text-green">9.2 CGPA</div>
+                            </div>
+                            <div class="vc-student-item">
+                                <div class="vc-s-avatar">S</div>
+                                <div class="vc-s-info">
+                                    <div class="vc-s-name">SIVARAM A M</div>
+                                    <div class="vc-s-id">24UAM152 • Sec B</div>
+                                </div>
+                                <div class="vc-s-score text-green">8.9 CGPA</div>
+                            </div>
+                            <div class="vc-student-item">
+                                <div class="vc-s-avatar">D</div>
+                                <div class="vc-s-info">
+                                    <div class="vc-s-name">DHARUNIKA N</div>
+                                    <div class="vc-s-id">24UAM114 • Sec A</div>
+                                </div>
+                                <div class="vc-s-score">8.5 CGPA</div>
+                            </div>
+                            <div class="vc-student-item">
+                                <div class="vc-s-avatar">S</div>
+                                <div class="vc-s-info">
+                                    <div class="vc-s-name">SOWMYA M</div>
+                                    <div class="vc-s-id">24UAM153 • Sec B</div>
+                                </div>
+                                <div class="vc-s-score text-green">9.1 CGPA</div>
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
             </div>
         </div>
-    </main>
+    </section>
 
-    <script src="assets/js/index.js"></script>
+    <!-- Features Section -->
+    <section id="features" class="section hidden-element">
+        <div class="section-container">
+            <div class="section-header text-center">
+                <h2 class="section-title">Core Features</h2>
+                <p class="section-desc mx-auto">Everything you need to run a modern academic department smoothly.</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🔐</div>
+                    <h3>Secure Role-Based Login</h3>
+                    <p>Granular access control ensuring data privacy and correct functionality for every user type.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🏢</div>
+                    <h3>Department Management</h3>
+                    <p>Organize sections, allocate resources, and oversee cross-departmental operations.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">👥</div>
+                    <h3>Faculty & Staff</h3>
+                    <p>Manage workloads, monitor schedules, and evaluate performance effortlessly.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎓</div>
+                    <h3>Student Management</h3>
+                    <p>Comprehensive student profiles containing academic history, achievements, and alerts.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📚</div>
+                    <h3>Course Management</h3>
+                    <p>Syllabus tracking, credit distribution, and material sharing capabilities.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">✅</div>
+                    <h3>Attendance Tracking</h3>
+                    <p>Streamlined check-ins with automated absence alerting and minimal friction.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📈</div>
+                    <h3>Results & GPA</h3>
+                    <p>Automated grading calculations mapped directly to institutional standards.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Analytics Dashboard</h3>
+                    <p>High-level insights utilizing big data to find academic trends and opportunities.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Architecture Section -->
+    <section id="architecture" class="section hidden-element">
+        <div class="section-container">
+            <div class="section-header text-center">
+                <h2 class="section-title">System Architecture</h2>
+                <p class="section-desc mx-auto">Built on a robust and scalable 3-Tier architecture ensuring fast
+                    response times and high availability.</p>
+            </div>
+            <div class="architecture-diagram">
+                <div class="tier client">
+                    <div class="tier-icon">💻</div>
+                    <h4>Frontend Layer</h4>
+                    <p>Responsive interface built with HTML, CSS, JS</p>
+                </div>
+                <div class="tier-connector">
+                    <div class="line animated-line"></div>
+                </div>
+                <div class="tier server">
+                    <div class="tier-icon">⚙️</div>
+                    <h4>Application Layer</h4>
+                    <p>Core logic, authentication, and routing APIs</p>
+                </div>
+                <div class="tier-connector">
+                    <div class="line animated-line"></div>
+                </div>
+                <div class="tier database">
+                    <div class="tier-icon">🗄️</div>
+                    <h4>Data Layer</h4>
+                    <p>Secure databases handling millions of records</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tech Stack Section -->
+    <section id="tech" class="section hidden-element">
+        <div class="section-container">
+            <div class="section-header text-center">
+                <h2 class="section-title">Tech Stack</h2>
+                <p class="section-desc mx-auto">Leveraging modern web technologies to deliver exceptional experiences.
+                </p>
+            </div>
+            <div class="tech-grid">
+                <div class="tech-category frontend">
+                    <h3>Frontend</h3>
+                    <div class="tech-badges">
+                        <span class="tech-badge">HTML5</span>
+                        <span class="tech-badge">Vanilla CSS3</span>
+                        <span class="tech-badge">JavaScript (ES6+)</span>
+                        <span class="tech-badge">React</span>
+                    </div>
+                </div>
+                <div class="tech-category backend">
+                    <h3>Backend</h3>
+                    <div class="tech-badges">
+                        <span class="tech-badge">Node.js</span>
+                        <span class="tech-badge">Express</span>
+                        <span class="tech-badge">Django</span>
+                    </div>
+                </div>
+                <div class="tech-category database">
+                    <h3>Database & Cloud</h3>
+                    <div class="tech-badges">
+                        <span class="tech-badge">PostgreSQL</span>
+                        <span class="tech-badge">MongoDB</span>
+                        <span class="tech-badge">AWS</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dashboard Preview Section -->
+    <section id="preview" class="section hidden-element">
+        <div class="section-container">
+            <div class="section-header text-center">
+                <h2 class="section-title">Application Preview</h2>
+                <p class="section-desc mx-auto">Experience our beautiful UI and fully functional sub-systems populated
+                    with real student data.</p>
+            </div>
+            <div class="preview-grid">
+                <div class="preview-card">
+                    <div class="preview-img-wrapper mock-login-bg">
+                        <!-- REAL VIDEO BACKGROUND FROM PROJECT -->
+                        <video autoplay loop muted playsinline class="preview-video-bg">
+                            <source src="The_college_students_1080p_202601212125.mp4" type="video/mp4">
+                        </video>
+                        <div class="preview-glass-content">
+                            <div class="pgc-title">Student Portal Login</div>
+                            <div class="pgc-inputs">
+                                <div class="pgc-input">Username</div>
+                                <div class="pgc-input">Password</div>
+                                <div class="pgc-btn">Sign In</div>
+                            </div>
+                        </div>
+                    </div>
+                    <h4>Intelligent Login</h4>
+                    <p>Role-based gateway synchronized with vibrant background videography and family portals.</p>
+                </div>
+                <div class="preview-card">
+                    <div class="preview-img-wrapper mock-dash-bg">
+                        <div class="dash-list">
+                            <div class="dl-item">
+                                <div><span class="dl-name">MEERASOUNDHARYA R</span> <span class="dl-id">#130</span>
+                                </div>
+                                <div class="dl-score">Present</div>
+                            </div>
+                            <div class="dl-item">
+                                <div><span class="dl-name">Abishek TV</span> <span class="dl-id">#102</span></div>
+                                <div class="dl-score">Late</div>
+                            </div>
+                            <div class="dl-item">
+                                <div><span class="dl-name">Aarthi S</span> <span class="dl-id">#101</span></div>
+                                <div class="dl-score">Present</div>
+                            </div>
+                        </div>
+                    </div>
+                    <h4>Faculty Admin Center</h4>
+                    <p>Command center to easily mark attendance and evaluate statistics on students like MEERASOUNDHARYA
+                        R.</p>
+                </div>
+                <div class="preview-card">
+                    <div class="preview-img-wrapper mock-student-bg">
+                        <div class="student-profile-mock">
+                            <div class="spm-header">
+                                <div class="spm-avatar">R</div>
+                                <div>
+                                    <div class="spm-name">RAMYA G</div>
+                                    <div class="spm-roll">24UAM138 • AIML Dept</div>
+                                </div>
+                            </div>
+                            <div class="spm-stats">
+                                <div class="spm-stat">
+                                    <div>SGPA</div><strong>9.4</strong>
+                                </div>
+                                <div class="spm-stat">
+                                    <div>Attendance</div><strong>96%</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <h4>Student Profile View</h4>
+                    <p>Deep dive into individual academic progression, semester logs, and core course evaluations.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AIML Integration Section -->
+    <section id="aiml" class="section hidden-element">
+        <div class="section-container glass-panel">
+            <div class="two-column align-center">
+                <div class="column-visual text-center">
+                    <div class="aiml-orb">
+                        <span>🧠</span>
+                    </div>
+                </div>
+                <div class="column-text">
+                    <div class="badge glow-badge">Premium Feature</div>
+                    <h2 class="section-title">Smart Campus Intelligence</h2>
+                    <p class="section-desc">
+                        Unlock predictive modeling and intelligent automation driven by Artificial Intelligence and
+                        Machine Learning.
+                    </p>
+                    <ul class="feature-list">
+                        <li><strong>Performance Prediction:</strong> Automatically detect academic drop-offs for
+                            students like Abishek TV.</li>
+                        <li><strong>Attendance Analytics:</strong> Spotlight chronic absenteeism patterns across entire
+                            departments.</li>
+                        <li><strong>Smart Scheduling:</strong> Algorithm-optimized timetable generation matching faculty
+                            availability.</li>
+                        <li><strong>Recommendation System:</strong> Suggest optimal elective paths for students like
+                            SIVARAM A M based on previous marks.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Team Section -->
+    <section id="team" class="section hidden-element">
+        <div class="section-container">
+            <div class="section-header text-center">
+                <h2 class="section-title">Project Team Context</h2>
+                <p class="section-desc mx-auto">Includes a dynamic student database containing over 65 real-time
+                    registered candidates representing our user scale.</p>
+            </div>
+            <div class="team-showcase">
+                <div class="team-card master-admin">
+                    <div class="team-avatar">👨‍💻</div>
+                    <h4>Harikrishnan S</h4>
+                    <p class="team-role">Lead Developer</p>
+                    <p class="team-desc">Architected the glassmorphism frontend and backend integrations.</p>
+                </div>
+            </div>
+
+            <div class="student-db-preview mt-40">
+                <h4 class="mb-20 text-center text-muted">A subset of our generated Student Base (65+ Records)</h4>
+                <div class="student-tags-container" id="student-tags">
+                    <!-- Populated via JS -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Future Scope Section -->
+    <section id="future" class="section hidden-element">
+        <div class="section-container">
+            <div class="section-header text-center">
+                <h2 class="section-title">Future Scope</h2>
+            </div>
+            <div class="future-grid">
+                <div class="future-item">
+                    <div class="future-icon">🤖</div>
+                    <h4>AI Chatbot Assistant</h4>
+                </div>
+                <div class="future-item">
+                    <div class="future-icon">📱</div>
+                    <h4>Native Mobile App</h4>
+                </div>
+                <div class="future-item">
+                    <div class="future-icon">☁️</div>
+                    <h4>Full Cloud Deployment</h4>
+                </div>
+                <div class="future-item">
+                    <div class="future-icon">📈</div>
+                    <h4>Real-time Metrics</h4>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer / Contact -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-top">
+                <div class="footer-logo">🎓 DMS</div>
+                <div class="footer-links">
+                    <a href="mailto:contact@example.com">Email Us</a>
+                    <a href="#">LinkedIn</a>
+                    <a href="#">GitHub</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Department Management System. All rights reserved.</p>
+                <p class="footer-credit">Designed with luxury and performance in mind.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="assets/js/portfolio.js"></script>
 </body>
 
 </html>

@@ -21,47 +21,59 @@ function selectRole(role) {
 
     // Handle Left Panel Content
     const defaultContent = document.getElementById('default-panel-content');
-    const studentVideoContainer = document.getElementById('student-video-container');
-    const studentVideo = document.getElementById('student-video');
-    const facultyVideoContainer = document.getElementById('faculty-video-container');
-    const facultyVideo = document.getElementById('faculty-video');
-    const hodVideoContainer = document.getElementById('hod-video-container');
-    const hodVideo = document.getElementById('hod-video');
+    const containers = {
+        student: document.getElementById('student-video-container'),
+        faculty: document.getElementById('faculty-video-container'),
+        hod: document.getElementById('hod-video-container'),
+        parent: document.getElementById('parent-video-container')
+    };
+    const videos = {
+        student: document.getElementById('student-video'),
+        faculty: document.getElementById('faculty-video'),
+        hod: document.getElementById('hod-video')
+    };
 
-    // Reset all first
-    if (defaultContent) defaultContent.style.display = 'block';
-    if (studentVideoContainer) {
-        studentVideoContainer.style.display = 'none';
-        if (studentVideo) studentVideo.pause();
-    }
-    if (facultyVideoContainer) {
-        facultyVideoContainer.style.display = 'none';
-        if (facultyVideo) facultyVideo.pause();
-    }
-    if (hodVideoContainer) {
-        hodVideoContainer.style.display = 'none';
-        if (hodVideo) hodVideo.pause();
+    // First hide everything smoothly
+    if (defaultContent) defaultContent.style.opacity = '0';
+    const defaultVideoContainer = document.getElementById('default-video-container');
+    if (defaultVideoContainer) {
+        defaultVideoContainer.style.opacity = '0';
+        defaultVideoContainer.style.filter = 'blur(5px)';
     }
 
-    if (role === 'student') {
+    setTimeout(() => {
         if (defaultContent) defaultContent.style.display = 'none';
-        if (studentVideoContainer) {
-            studentVideoContainer.style.display = 'block';
-            if (studentVideo) studentVideo.play().catch(e => console.log("Autoplay prevented:", e));
+        if (defaultVideoContainer) defaultVideoContainer.style.display = 'none';
+
+        Object.values(containers).forEach(container => {
+            if (container) {
+                container.classList.remove('active-video');
+                setTimeout(() => {
+                    if (!container.classList.contains('active-video')) {
+                        container.style.display = 'none';
+                    }
+                }, 800);
+            }
+        });
+
+        Object.values(videos).forEach(video => {
+            if (video) video.pause();
+        });
+
+        // Show selected
+        const selectedContainer = containers[role];
+        if (selectedContainer) {
+            selectedContainer.style.display = 'block';
+            // Trigger reflow
+            void selectedContainer.offsetWidth;
+            selectedContainer.classList.add('active-video');
         }
-    } else if (role === 'faculty') {
-        if (defaultContent) defaultContent.style.display = 'none';
-        if (facultyVideoContainer) {
-            facultyVideoContainer.style.display = 'block';
-            if (facultyVideo) facultyVideo.play().catch(e => console.log("Autoplay prevented:", e));
+
+        const selectedVideo = videos[role];
+        if (selectedVideo) {
+            selectedVideo.play().catch(e => console.log("Autoplay prevented:", e));
         }
-    } else if (role === 'hod') {
-        if (defaultContent) defaultContent.style.display = 'none';
-        if (hodVideoContainer) {
-            hodVideoContainer.style.display = 'block';
-            if (hodVideo) hodVideo.play().catch(e => console.log("Autoplay prevented:", e));
-        }
-    }
+    }, 300);
 }
 
 // Form Submissions
@@ -185,7 +197,7 @@ function handleLogin(role) {
         localStorage.setItem('userRole', role);
 
         // Redirect to main dashboard
-        window.location.href = 'index.html';
+        window.location.href = 'dashboard.html';
     }, 1500);
 }
 
