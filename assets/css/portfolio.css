@@ -253,14 +253,16 @@ body {
 
 /* Hero Section */
 .hero {
-    min-height: 100vh;
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    padding-top: 130px;
-    padding-bottom: 60px;
+    padding-top: 140px;
+    padding-bottom: 80px;
     text-align: center;
     position: relative;
+}
+
+.hero-content {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 24px;
 }
 
 .badge {

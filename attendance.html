@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DMS — Mark Attendance</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg: #070b18;
+            --surface: rgba(255, 255, 255, 0.04);
+            --border: rgba(255, 255, 255, 0.08);
+            --text: #f1f5f9;
+            --muted: #64748b;
+            --indigo: #6366f1;
+            --green: #10b981;
+            --red: #ef4444;
+            --amber: #f59e0b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Ambient glows */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -20%;
+            left: -10%;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.12), transparent 70%);
+            pointer-events: none;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: -20%;
+            right: -10%;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.1), transparent 70%);
+            pointer-events: none;
+        }
+
+        .attendance-card {
+            background: rgba(13, 18, 38, 0.95);
+            border: 1px solid var(--border);
+            border-radius: 28px;
+            padding: 50px;
+            max-width: 560px;
+            width: 100%;
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6);
+            position: relative;
+            z-index: 1;
+            animation: cardIn 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+
+        @keyframes cardIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card-header {
+            text-align: center;
+            margin-bottom: 36px;
+        }
+
+        .card-icon {
+            width: 72px;
+            height: 72px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.15));
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            margin: 0 auto 20px;
+        }
+
+        .card-header h1 {
+            font-size: 26px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .card-header p {
+            font-size: 14px;
+            color: var(--muted);
+        }
+
+        .student-info {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 18px 22px;
+            margin-bottom: 32px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .student-avatar {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: 800;
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        .student-meta h3 {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .student-meta p {
+            font-size: 13px;
+            color: var(--muted);
+            margin-top: 3px;
+        }
+
+        .date-strip {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+            font-size: 13px;
+        }
+
+        .date-strip .label {
+            color: var(--muted);
+            font-weight: 500;
+        }
+
+        .date-strip .value {
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        /* ─── Attendance Options ─── */
+        .attendance-label {
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 14px;
+        }
+
+        .attendance-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 28px;
+        }
+
+        .att-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            padding: 22px 12px;
+            border-radius: 18px;
+            border: 2px solid var(--border);
+            background: var(--surface);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: 'Inter', sans-serif;
+            color: var(--text);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .att-option::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .att-option:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        }
+
+        .att-option.present:hover,
+        .att-option.present.selected {
+            border-color: var(--green);
+            background: rgba(16, 185, 129, 0.12);
+        }
+
+        .att-option.present.selected {
+            box-shadow: 0 0 24px rgba(16, 185, 129, 0.25);
+        }
+
+        .att-option.absent:hover,
+        .att-option.absent.selected {
+            border-color: var(--red);
+            background: rgba(239, 68, 68, 0.12);
+        }
+
+        .att-option.absent.selected {
+            box-shadow: 0 0 24px rgba(239, 68, 68, 0.25);
+        }
+
+        .att-option.od:hover,
+        .att-option.od.selected {
+            border-color: var(--amber);
+            background: rgba(245, 158, 11, 0.12);
+        }
+
+        .att-option.od.selected {
+            box-shadow: 0 0 24px rgba(245, 158, 11, 0.25);
+        }
+
+        .att-option .opt-icon {
+            font-size: 32px;
+        }
+
+        .att-option .opt-label {
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+
+        .att-option .opt-sub {
+            font-size: 11px;
+            color: var(--muted);
+            text-align: center;
+        }
+
+        .selected-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+        }
+
+        .present.selected .selected-badge {
+            display: flex;
+            background: var(--green);
+        }
+
+        .absent.selected .selected-badge {
+            display: flex;
+            background: var(--red);
+        }
+
+        .od.selected .selected-badge {
+            display: flex;
+            background: var(--amber);
+        }
+
+        /* ─── Sub-panels ─── */
+        .sub-panel {
+            display: none;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 22px;
+            animation: fadePanel 0.3s ease;
+        }
+
+        .sub-panel.visible {
+            display: block;
+        }
+
+        @keyframes fadePanel {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .sub-panel h4 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 8px;
+        }
+
+        .form-input,
+        .form-textarea,
+        .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1.5px solid var(--border);
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            color: var(--text);
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus,
+        .form-select:focus {
+            border-color: var(--indigo);
+            background: rgba(99, 102, 241, 0.06);
+        }
+
+        .form-input::placeholder,
+        .form-textarea::placeholder {
+            color: rgba(255, 255, 255, 0.2);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 90px;
+        }
+
+        .form-select option {
+            background: #0d1226;
+        }
+
+        .upload-box {
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .upload-box:hover {
+            border-color: var(--indigo);
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .upload-box .upload-icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .upload-box p {
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .upload-box small {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.25);
+        }
+
+        .upload-box input[type=file] {
+            display: none;
+        }
+
+        /* OD preview */
+        .od-preview {
+            background: rgba(245, 158, 11, 0.06);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 13px;
+            color: #fbbf24;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        /* Submit button */
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: #fff;
+            border: none;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 36px rgba(99, 102, 241, 0.45);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Success screen */
+        .success-screen {
+            display: none;
+            text-align: center;
+            padding: 30px 0;
+            animation: cardIn 0.5s ease;
+        }
+
+        .success-screen.visible {
+            display: block;
+        }
+
+        .success-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .success-screen h2 {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .success-screen p {
+            color: var(--muted);
+            font-size: 14px;
+            margin-bottom: 28px;
+        }
+
+        .success-screen .tag {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 30px;
+        }
+
+        .tag-present {
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .tag-absent {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .tag-od {
+            background: rgba(245, 158, 11, 0.15);
+            color: #f59e0b;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .proceed-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 13px 28px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: #fff;
+            border-radius: 12px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 700;
+            transition: all 0.3s;
+        }
+
+        .proceed-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 28px rgba(99, 102, 241, 0.4);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="attendance-card">
+        <!-- Main form -->
+        <div id="main-form">
+            <div class="card-header">
+                <div class="card-icon">✅</div>
+                <h1>Mark Attendance</h1>
+                <p id="date-display">Loading...</p>
+            </div>
+
+            <!-- Student Info -->
+            <div class="student-info">
+                <div class="student-avatar" id="student-initial">S</div>
+                <div class="student-meta">
+                    <h3 id="student-name-display">Loading...</h3>
+                    <p id="student-roll-display">Roll Number</p>
+                </div>
+            </div>
+
+            <!-- Date strip -->
+            <div class="date-strip">
+                <span class="label">📅 Today</span>
+                <span class="value" id="today-date"></span>
+                <span class="label">🕐 Time</span>
+                <span class="value" id="today-time"></span>
+            </div>
+
+            <!-- Attendance Options -->
+            <div class="attendance-label">Select your attendance status</div>
+            <div class="attendance-options">
+                <button class="att-option present" onclick="selectStatus('present')">
+                    <span class="selected-badge">✓</span>
+                    <span class="opt-icon">✅</span>
+                    <span class="opt-label">Present</span>
+                    <span class="opt-sub">Mark myself present</span>
+                </button>
+                <button class="att-option absent" onclick="selectStatus('absent')">
+                    <span class="selected-badge">✓</span>
+                    <span class="opt-icon">❌</span>
+                    <span class="opt-label">Absent</span>
+                    <span class="opt-sub">Submit reason + letter</span>
+                </button>
+                <button class="att-option od" onclick="selectStatus('od')">
+                    <span class="selected-badge">✓</span>
+                    <span class="opt-icon">📋</span>
+                    <span class="opt-label">OD</span>
+                    <span class="opt-sub">Request OD approval</span>
+                </button>
+            </div>
+
+            <!-- ABSENT sub-panel -->
+            <div class="sub-panel" id="absent-panel">
+                <h4>⚠️ Absence Details Required</h4>
+                <div class="form-group">
+                    <label class="form-label">Reason for Absence</label>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+                        <button type="button" class="reason-chip"
+                            onclick="selectReason(this,'Medical / Health Issue')">🤒 Medical</button>
+                        <button type="button" class="reason-chip" onclick="selectReason(this,'Family Emergency')">🏠
+                            Family Emergency</button>
+                        <button type="button" class="reason-chip" onclick="selectReason(this,'Transport Issue')">🚌
+                            Transport</button>
+                        <button type="button" class="reason-chip" onclick="selectReason(this,'Other')">📝 Other</button>
+                    </div>
+                    <textarea class="form-textarea" id="absence-reason"
+                        placeholder="Describe your reason in detail..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">📎 Parent Consent / Medical Letter</label>
+                    <div class="upload-box" onclick="document.getElementById('letter-file').click()">
+                        <div class="upload-icon">☁️</div>
+                        <p>Click to upload letter / medical certificate</p>
+                        <small>PDF, JPG, PNG — Max 5MB</small>
+                        <input type="file" id="letter-file" accept=".pdf,.jpg,.jpeg,.png"
+                            onchange="handleFileUpload(this)">
+                    </div>
+                    <div id="file-name-display" style="font-size:12px;color:#10b981;margin-top:8px;display:none;"></div>
+                </div>
+            </div>
+
+            <!-- OD sub-panel -->
+            <div class="sub-panel" id="od-panel">
+                <h4>📋 On-Duty Request</h4>
+                <div class="form-group">
+                    <label class="form-label">OD Purpose</label>
+                    <select class="form-select" id="od-purpose">
+                        <option value="">Select OD type...</option>
+                        <option>Technical Symposium / Hackathon</option>
+                        <option>Sports / Cultural Event</option>
+                        <option>Industrial Visit</option>
+                        <option>Examination (other institution)</option>
+                        <option>Government / Official Duty</option>
+                        <option>Other (specify below)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Event / Organisation Details</label>
+                    <input class="form-input" id="od-event" type="text" placeholder="e.g. IIT Madras Kurukshetra 2026">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">OD Date(s)</label>
+                    <input class="form-input" id="od-date" type="date">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Additional Details</label>
+                    <textarea class="form-textarea" id="od-details"
+                        placeholder="Provide any extra information..."></textarea>
+                </div>
+                <div class="od-preview">
+                    <span>📬</span>
+                    <div>A notification will be automatically sent to your <strong>Class Faculty</strong> and
+                        <strong>HOD</strong> for approval. You'll be notified once approved.</div>
+                </div>
+            </div>
+
+            <button class="submit-btn" id="submit-btn" onclick="submitAttendance()" disabled>
+                Submit Attendance
+            </button>
+        </div>
+
+        <!-- Success Screen -->
+        <div class="success-screen" id="success-screen">
+            <span class="success-icon" id="success-icon">✅</span>
+            <h2 id="success-title">Attendance Marked!</h2>
+            <p id="success-msg">Your attendance has been recorded successfully.</p>
+            <div id="success-tag" class="tag tag-present">Present</div><br>
+            <a href="student-dashboard.html" class="proceed-btn">Continue to Dashboard →</a>
+        </div>
+    </div>
+
+    <script>
+        // ─── Init: load student data ───
+        let selectedStatus = null;
+        let selectedReason = null;
+
+        const studentData = JSON.parse(localStorage.getItem('studentData') || '{}');
+        const name = studentData.name || 'Student';
+        const rollNo = studentData.rollNo || '—';
+
+        document.getElementById('student-name-display').textContent = name;
+        document.getElementById('student-roll-display').textContent = rollNo;
+        document.getElementById('student-initial').textContent = name.charAt(0).toUpperCase();
+
+        const now = new Date();
+        const dateStr = now.toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        const timeStr = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+
+        document.getElementById('date-display').textContent = dateStr;
+        document.getElementById('today-date').textContent = now.toLocaleDateString('en-IN');
+        document.getElementById('today-time').textContent = timeStr;
+
+        // ─── Status Selection ───
+        function selectStatus(status) {
+            selectedStatus = status;
+            document.querySelectorAll('.att-option').forEach(el => el.classList.remove('selected'));
+            document.querySelector(`.att-option.${status}`).classList.add('selected');
+
+            // Show/hide sub-panels
+            document.getElementById('absent-panel').classList.remove('visible');
+            document.getElementById('od-panel').classList.remove('visible');
+            if (status === 'absent') document.getElementById('absent-panel').classList.add('visible');
+            if (status === 'od') document.getElementById('od-panel').classList.add('visible');
+
+            updateBtn();
+        }
+
+        function selectReason(btn, text) {
+            document.querySelectorAll('.reason-chip').forEach(c => c.classList.remove('active-chip'));
+            btn.classList.add('active-chip');
+            selectedReason = text;
+            document.getElementById('absence-reason').placeholder = `Reason: ${text}. Add more details...`;
+        }
+
+        function handleFileUpload(input) {
+            if (input.files && input.files[0]) {
+                const display = document.getElementById('file-name-display');
+                display.textContent = '✓ ' + input.files[0].name + ' attached';
+                display.style.display = 'block';
+            }
+            updateBtn();
+        }
+
+        function updateBtn() {
+            const btn = document.getElementById('submit-btn');
+            if (selectedStatus === 'present') {
+                btn.disabled = false;
+                btn.textContent = '✅ Submit — Mark Present';
+            } else if (selectedStatus === 'absent') {
+                btn.disabled = false;
+                btn.textContent = '❌ Submit Absence Request';
+            } else if (selectedStatus === 'od') {
+                btn.disabled = false;
+                btn.textContent = '📋 Send OD Request for Approval';
+            } else {
+                btn.disabled = true;
+                btn.textContent = 'Submit Attendance';
+            }
+        }
+
+        // ─── Submit ───
+        function submitAttendance() {
+            if (!selectedStatus) return;
+
+            const reason = document.getElementById('absence-reason')?.value.trim();
+            const odPurpose = document.getElementById('od-purpose')?.value;
+            const odEvent = document.getElementById('od-event')?.value.trim();
+
+            // Validation for absent
+            if (selectedStatus === 'absent' && !reason && !selectedReason) {
+                alert('Please provide a reason for absence.');
+                return;
+            }
+
+            // Save record
+            const record = {
+                name: name,
+                rollNo: rollNo,
+                date: now.toLocaleDateString('en-IN'),
+                time: timeStr,
+                status: selectedStatus.toUpperCase(),
+                reason: reason || selectedReason || '',
+                odPurpose: odPurpose || '',
+                odEvent: odEvent || ''
+            };
+
+            const records = JSON.parse(localStorage.getItem('attendanceRecords') || '[]');
+            records.push(record);
+            localStorage.setItem('attendanceRecords', JSON.stringify(records));
+
+            // OD notification simulation
+            if (selectedStatus === 'od') {
+                const notifs = JSON.parse(localStorage.getItem('odRequests') || '[]');
+                notifs.push({
+                    student: name,
+                    rollNo: rollNo,
+                    purpose: odPurpose,
+                    event: odEvent,
+                    date: odDate?.value || now.toLocaleDateString('en-IN'),
+                    submittedAt: new Date().toISOString(),
+                    status: 'Pending'
+                });
+                localStorage.setItem('odRequests', JSON.stringify(notifs));
+            }
+
+            // Show success
+            document.getElementById('main-form').style.display = 'none';
+            const screen = document.getElementById('success-screen');
+            screen.classList.add('visible');
+
+            const icons = { present: '✅', absent: '❌', od: '📋' };
+            const titles = { present: 'You\'re Marked Present!', absent: 'Absence Submitted', od: 'OD Request Sent!' };
+            const msgs = {
+                present: 'Your attendance for today has been recorded.',
+                absent: 'Your absence with reason has been sent to your class faculty.',
+                od: 'Your OD request has been sent to Faculty and HOD for approval.'
+            };
+            const tagClasses = { present: 'tag-present', absent: 'tag-absent', od: 'tag-od' };
+            const tagLabels = { present: '✅ Present', absent: '❌ Absent', od: '📋 OD Pending' };
+
+            document.getElementById('success-icon').textContent = icons[selectedStatus];
+            document.getElementById('success-title').textContent = titles[selectedStatus];
+            document.getElementById('success-msg').textContent = msgs[selectedStatus];
+            const tag = document.getElementById('success-tag');
+            tag.className = 'tag ' + tagClasses[selectedStatus];
+            tag.textContent = tagLabels[selectedStatus];
+        }
+
+        // Reason chip styles (inline)
+        const chipStyle = `
+            .reason-chip {
+                padding: 8px 12px;
+                border-radius: 8px;
+                border: 1.5px solid rgba(255,255,255,0.08);
+                background: rgba(255,255,255,0.03);
+                color: #94a3b8;
+                font-size: 12px;
+                font-weight: 600;
+                cursor: pointer;
+                font-family: 'Inter', sans-serif;
+                transition: all 0.2s;
+            }
+            .reason-chip:hover { border-color: rgba(239,68,68,0.4); color: #fff; }
+            .reason-chip.active-chip { border-color: #ef4444; background: rgba(239,68,68,0.12); color: #ff8080; }
+        `;
+        const styleTag = document.createElement('style');
+        styleTag.textContent = chipStyle;
+        document.head.appendChild(styleTag);
+    </script>
+</body>
+
+</html>
