@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Student Profile - Department Management System">
+    <title>Student Profiles - DMS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/student-profile.css">
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-title">DMS</div>
+            <div class="sidebar-subtitle" id="portalSubtitle">Student Portal</div>
+        </div>
+        <nav>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="dashboard.html" class="nav-link">
+                        <span class="nav-icon">📊</span>
+                        Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="student-profile.html" class="nav-link active">
+                        <span class="nav-icon">👨‍🎓</span>
+                        Students
+                    </a>
+                </li>
+                <li class="nav-item admin-only" style="display: none;">
+                    <a href="admin-dashboard.html" class="nav-link">
+                        <span class="nav-icon">⚙️</span>
+                        Admin Panel
+                    </a>
+                </li>
+                <li class="nav-item faculty-only" style="display: none;">
+                    <a href="faculty-dashboard.html" class="nav-link">
+                        <span class="nav-icon">👨‍🏫</span>
+                        Faculty Panel
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="header">
+            <h1 class="header-title">Student Profiles</h1>
+            <div class="header-actions">
+                <div class="search-box">
+                    <span>🔍</span>
+                    <input type="text" placeholder="Search students..." id="searchInput" oninput="searchStudents()">
+                </div>
+                <button class="btn-primary admin-only" onclick="showAddStudentModal()" style="display: none;">
+                    + Add Student
+                </button>
+            </div>
+        </header>
+
+        <!-- Dashboard Content -->
+        <div class="dashboard-content">
+            <!-- Access Denied Banner (for unauthorized access) -->
+            <div class="access-denied" id="accessDenied" style="display: none;">
+                <div class="access-denied-icon">🔒</div>
+                <h2>Access Restricted</h2>
+                <p>You don't have permission to access this page. Please login with appropriate credentials.</p>
+                <a href="login.html" class="btn-primary">Go to Login</a>
+            </div>
+
+            <!-- Students List Section -->
+            <div class="students-section" id="studentsSection">
+                <!-- Student Cards Grid -->
+                <div class="students-grid" id="studentsGrid">
+                    <!-- Student cards will be dynamically generated -->
+                </div>
+            </div>
+
+            <!-- Individual Student Profile Section -->
+            <div class="profile-section" id="profileSection" style="display: none;">
+                <!-- Back Button -->
+                <button class="btn-back" onclick="showStudentsList()">
+                    ← Back to Students
+                </button>
+
+                <!-- Profile Header Card -->
+                <div class="profile-card">
+                    <div class="profile-header">
+                        <div class="profile-image-container">
+                            <img src="https://ui-avatars.com/api/?name=John+Doe&size=150&background=667eea&color=fff&bold=true"
+                                alt="Student Photo" class="profile-image" id="profileImage">
+                            <button class="btn-change-photo admin-only" onclick="changePhoto()" style="display: none;">
+                                📷 Change
+                            </button>
+                        </div>
+                        <div class="profile-info">
+                            <h2 class="student-name" id="studentName">John Doe</h2>
+                            <span class="department-badge" id="departmentBadge">Computer Science & Engineering</span>
+                            <div class="profile-meta">
+                                <span><strong>Roll No:</strong> <span id="rollNumber">CS2024001</span></span>
+                                <span><strong>Year:</strong> <span id="academicYear">2nd Year</span></span>
+                                <span><strong>Program:</strong> <span id="program">B.Tech</span></span>
+                            </div>
+                        </div>
+                        <div class="profile-actions">
+                            <button class="btn-edit admin-only" onclick="editStudentDetails()" style="display: none;">
+                                ✏️ Edit Details
+                            </button>
+                            <button class="btn-delete admin-only" onclick="deleteStudent()" style="display: none;">
+                                🗑️ Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card cgpa-card">
+                        <div class="stat-icon">📊</div>
+                        <div class="stat-label">CGPA</div>
+                        <div class="stat-value" id="cgpaValue">8.45</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📈</div>
+                        <div class="stat-label">Current SGPA</div>
+                        <div class="stat-value" id="currentSgpa">8.72</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🎓</div>
+                        <div class="stat-label">10th Percentage</div>
+                        <div class="stat-value" id="tenthPercentage">92.5%</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📚</div>
+                        <div class="stat-label">Total Credits</div>
+                        <div class="stat-value" id="totalCredits">96</div>
+                    </div>
+                </div>
+
+                <!-- Semester Tabs -->
+                <div class="semester-tabs" id="semesterTabs">
+                    <!-- Tabs will be generated dynamically -->
+                </div>
+
+                <!-- Semester Marks Table -->
+                <div class="table-section">
+                    <div class="table-header">
+                        <h2 class="table-title">Academic Performance - <span id="semesterTitle">Semester 1</span></h2>
+                        <div class="table-actions">
+                            <span class="sgpa-badge">SGPA: <strong id="semesterSgpa">8.50</strong></span>
+                            <button class="btn-primary edit-marks-btn" onclick="showEditMarksModal()"
+                                style="display: none;">
+                                ✏️ Update Marks
+                            </button>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Subject Code</th>
+                                    <th>Subject Name</th>
+                                    <th>Credits</th>
+                                    <th>Marks Obtained</th>
+                                    <th>Max Marks</th>
+                                    <th>Grade</th>
+                                    <th>Grade Points</th>
+                                    <th>Exam Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="marksTableBody">
+                                <!-- Marks will be populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Add Student Modal -->
+    <div class="modal" id="addStudentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Add New Student</h2>
+                <button class="modal-close" onclick="hideModal('addStudentModal')">×</button>
+            </div>
+            <form id="addStudentForm" onsubmit="addStudent(event)">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Full Name *</label>
+                        <input type="text" class="form-input" id="newStudentName" placeholder="Enter full name"
+                            required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Roll Number *</label>
+                        <input type="text" class="form-input" id="newRollNumber" placeholder="e.g., CS2024001" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Department *</label>
+                        <select class="form-select" id="newDepartment" required>
+                            <option value="">Select Department</option>
+                            <option value="Computer Science & Engineering">Computer Science & Engineering</option>
+                            <option value="Electronics & Communication">Electronics & Communication</option>
+                            <option value="Mechanical Engineering">Mechanical Engineering</option>
+                            <option value="Civil Engineering">Civil Engineering</option>
+                            <option value="Information Technology">Information Technology</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Program *</label>
+                        <select class="form-select" id="newProgram" required>
+                            <option value="">Select Program</option>
+                            <option value="B.Tech">B.Tech</option>
+                            <option value="M.Tech">M.Tech</option>
+                            <option value="BCA">BCA</option>
+                            <option value="MCA">MCA</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Academic Year *</label>
+                        <select class="form-select" id="newAcademicYear" required>
+                            <option value="">Select Year</option>
+                            <option value="1st Year">1st Year</option>
+                            <option value="2nd Year">2nd Year</option>
+                            <option value="3rd Year">3rd Year</option>
+                            <option value="4th Year">4th Year</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">10th Percentage *</label>
+                        <input type="number" class="form-input" id="newTenthPercentage" placeholder="e.g., 92.5" min="0"
+                            max="100" step="0.1" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary btn-full">Add Student</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Student Modal -->
+    <div class="modal" id="editStudentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Edit Student Details</h2>
+                <button class="modal-close" onclick="hideModal('editStudentModal')">×</button>
+            </div>
+            <form id="editStudentForm" onsubmit="saveStudentDetails(event)">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Full Name *</label>
+                        <input type="text" class="form-input" id="editStudentName" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Roll Number</label>
+                        <input type="text" class="form-input" id="editRollNumber" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Department *</label>
+                        <select class="form-select" id="editDepartment" required>
+                            <option value="Computer Science & Engineering">Computer Science & Engineering</option>
+                            <option value="Electronics & Communication">Electronics & Communication</option>
+                            <option value="Mechanical Engineering">Mechanical Engineering</option>
+                            <option value="Civil Engineering">Civil Engineering</option>
+                            <option value="Information Technology">Information Technology</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Program *</label>
+                        <select class="form-select" id="editProgram" required>
+                            <option value="B.Tech">B.Tech</option>
+                            <option value="M.Tech">M.Tech</option>
+                            <option value="BCA">BCA</option>
+                            <option value="MCA">MCA</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Academic Year *</label>
+                        <select class="form-select" id="editAcademicYear" required>
+                            <option value="1st Year">1st Year</option>
+                            <option value="2nd Year">2nd Year</option>
+                            <option value="3rd Year">3rd Year</option>
+                            <option value="4th Year">4th Year</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">10th Percentage *</label>
+                        <input type="number" class="form-input" id="editTenthPercentage" min="0" max="100" step="0.1"
+                            required>
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary btn-full">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Marks Modal -->
+    <div class="modal" id="editMarksModal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2 class="modal-title">Update Marks - <span id="editMarksSemester">Semester 1</span></h2>
+                <button class="modal-close" onclick="hideModal('editMarksModal')">×</button>
+            </div>
+            <form id="editMarksForm" onsubmit="saveMarks(event)">
+                <div class="marks-edit-grid" id="marksEditGrid">
+                    <!-- Marks input fields will be generated dynamically -->
+                </div>
+                <button type="submit" class="btn-primary btn-full">Save Marks</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="assets/js/student-profile.js"></script>
+</body>
+
+</html>

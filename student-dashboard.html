@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Student Dashboard for Department Management System">
+    <title>Student Dashboard - DMS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="student-module.css">
+</head>
+
+<body>
+    <!-- Mobile Menu Toggle -->
+    <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+
+    <!-- Overlay -->
+    <div class="overlay" onclick="toggleSidebar()"></div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-title">DMS</div>
+            <div class="sidebar-subtitle">Student Portal</div>
+        </div>
+
+        <div class="student-info">
+            <div class="student-name" id="studentName">Loading...</div>
+            <div class="student-id" id="studentRoll">Loading...</div>
+        </div>
+
+        <nav>
+            <ul class="nav-menu">
+                <li class="nav-category">Academic Hub</li>
+                <li class="nav-item">
+                    <div class="nav-link active" onclick="showSection('dashboard')">
+                        <span class="nav-icon">📊</span>
+                        Dashboard
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <div class="nav-link" onclick="showSection('marks')">
+                        <span class="nav-icon">📈</span>
+                        View Marks
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <div class="nav-link" onclick="showSection('submissions')">
+                        <span class="nav-icon">📁</span>
+                        Submissions
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <div class="nav-link" onclick="showSection('calendar-exams')">
+                        <span class="nav-icon">📅</span>
+                        Calendar & Exams
+                    </div>
+                </li>
+
+                <li class="nav-category">Document Center</li>
+                <li class="nav-item">
+                    <div class="nav-link" onclick="showSection('requests')">
+                        <span class="nav-icon">📄</span>
+                        Certificates & Requests
+                    </div>
+                </li>
+
+                <li class="nav-category">Life at Campus</li>
+                <li class="nav-item">
+                    <div class="nav-link" onclick="showSection('attendance-timetable')">
+                        <span class="nav-icon">🕐</span>
+                        Attendance & Timetable
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <div class="nav-link" onclick="showSection('activities')">
+                        <span class="nav-icon">🏆</span>
+                        Activities & Co-curricular
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <div class="nav-link" onclick="showSection('leave-od')">
+                        <span class="nav-icon">✉️</span>
+                        Leave & OD
+                    </div>
+                </li>
+
+                <li class="nav-category">Administration</li>
+                <li class="nav-item">
+                    <div class="nav-link" onclick="showSection('profile')">
+                        <span class="nav-icon">👤</span>
+                        My Profile
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <div class="nav-link" onclick="showSection('parent-admin')">
+                        <span class="nav-icon">👩‍💼</span>
+                        Parent & Admin
+                    </div>
+                </li>
+            </ul>
+        </nav>
+
+        <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <h1>Student Dashboard</h1>
+                <p>Welcome back! Here's your academic overview</p>
+            </div>
+            <div class="header-right">
+                <div class="user-meta" style="text-align: right; margin-right: 15px; display: none;">
+                    <h4 id="studentName" style="font-size: 14px; color: #1b2559;">Student Name</h4>
+                    <p id="studentRoll" style="font-size: 11px; color: #a3aed0;">Roll No: —</p>
+                </div>
+                <button class="notification-btn">
+                    🔔
+                    <span class="notification-badge"></span>
+                </button>
+                <div class="user-avatar" id="userAvatar">S</div>
+            </div>
+        </header>
+
+        <!-- 1. Dashboard Consolidated Section -->
+        <div class="dashboard-content content-section active" id="section-dashboard">
+            <div class="welcome-banner">
+                <h2 id="welcomeMessage">Welcome back, Student!</h2>
+                <p id="attendanceStatus">Loading your daily update...</p>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">📚</div>
+                    <div class="stat-label">Enrolled Courses</div>
+                    <div class="stat-value">8</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-label">Attendance</div>
+                    <div class="stat-value" id="dash-attendance-val">87%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📁</div>
+                    <div class="stat-label">Pending Items</div>
+                    <div class="stat-value" id="dash-pending-val">3</div>
+                </div>
+                <div class="stat-card" onclick="showSection('marks')" style="cursor:pointer;">
+                    <div class="stat-icon">⭐</div>
+                    <div class="stat-label">CGPA</div>
+                    <div class="stat-value" id="currentCGPA">8.6</div>
+                </div>
+            </div>
+
+            <div class="content-grid">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title">Today's Schedule</h3>
+                        <a href="javascript:void(0)" onclick="showSection('attendance-timetable')" class="view-all">Full
+                            Timetable →</a>
+                    </div>
+                    <div class="section-content" id="dashboard-courses"></div>
+                </div>
+                <div>
+                    <div class="section-card" style="margin-bottom: 24px;">
+                        <div class="section-header">
+                            <h3 class="section-title">Critical Deadlines</h3>
+                        </div>
+                        <div class="section-content" id="dashboard-assignments"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Submissions Section -->
+        <div class="dashboard-content content-section" id="section-submissions">
+            <div class="welcome-banner">
+                <h2>Academic Hub & Submissions</h2>
+                <p>Upload lab records, project reports, and internship documents</p>
+            </div>
+            <div class="content-grid">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title">Upload New Submission</h3>
+                    </div>
+                    <div class="section-content">
+                        <form class="profile-form" id="form-academic-submission">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Submission Type</label>
+                                    <select class="form-select" id="acad-type" required>
+                                        <option value="">Select Type</option>
+                                        <option>Assignment Sheet</option>
+                                        <option>Lab Record / Observation</option>
+                                        <option>Project Proposal</option>
+                                        <option>Project Mid-Review</option>
+                                        <option>Final Project Report</option>
+                                        <option>Seminar Materials</option>
+                                        <option>Internship Offer Letter</option>
+                                        <option>Internship Completion Certificate</option>
+                                        <option>Internship Report</option>
+                                        <option>Industrial Visit Report</option>
+                                        <option>Research Paper</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Item Title</label>
+                                    <input type="text" id="acad-title" placeholder="e.g. Data Structures Lab 5"
+                                        required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Upload Document (PDF/PDF Icon) 📄</label>
+                                <input type="file" id="acad-file" class="form-input" required>
+                            </div>
+                            <button type="submit" class="btn-primary">📤 Submit to Faculty</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title">Submission History</h3>
+                    </div>
+                    <div class="section-content">
+                        <div class="table-container">
+                            <table class="marks-table">
+                                <thead>
+                                    <tr>
+                                        <th>Type</th>
+                                        <th>Title</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="submissions-list"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Calendar & Exams Section -->
+        <div class="dashboard-content content-section" id="section-calendar-exams">
+            <div class="welcome-banner">
+                <h2>Calendar & Exams</h2>
+                <p>Exam schedules, Hall tickets, and Academic events</p>
+            </div>
+            <div class="content-grid" style="grid-template-columns: 1fr 1.5fr;">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title">Academic Events</h3>
+                    </div>
+                    <div class="section-content" id="calendar-list"></div>
+                </div>
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title">Exam Schedule</h3>
+                    </div>
+                    <div class="section-content" id="exam-list"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. Requests & Certificates Section -->
+        <div class="dashboard-content content-section" id="section-requests">
+            <div class="welcome-banner">
+                <h2>Document Center</h2>
+                <p>Apply for Bonafide, Marksheets, and Schooling certificates (10th/12th)</p>
+            </div>
+            <div class="content-grid">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title">New Request</h3>
+                    </div>
+                    <div class="section-content">
+                        <form class="profile-form" id="form-cert-request">
+                            <div class="form-group">
+                                <label>Request Type</label>
+                                <select class="form-select" id="req-type" required>
+                                    <option value="">Select Certificate</option>
+                                    <option>Bonafide Certificate</option>
+                                    <option>10th Certificate</option>
+                                    <option>11th Certificate</option>
+                                    <option>12th Certificate</option>
+                                    <option>Semester Marksheet</option>
+                                    <option>Transfer Certificate (TC)</option>
+                                    <option>No Dues Clearance</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Purpose / Reason</label>
+                                <textarea id="req-purpose" placeholder="e.g. Bank Loan, Visa Application"
+                                    required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Supporting Document (if any) 📂</label>
+                                <input type="file" id="req-file">
+                            </div>
+                            <button type="submit" class="btn-primary">📜 Generate Request</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title">Request Tracking</h3>
+                    </div>
+                    <div class="section-content" id="requests-status-list"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. Attendance & Timetable -->
+        <div class="dashboard-content content-section" id="section-attendance-timetable">
+            <div class="welcome-banner">
+                <h2>Attendance & Timetable</h2>
+                <p>Daily class schedule and subject-wise attendance analytics</p>
+            </div>
+            <div class="timetable-controls">
+                <div class="day-tabs" id="timetable-day-tabs">
+                    <button class="day-tab" onclick="renderTimetable('Monday')">Mon</button>
+                    <button class="day-tab" onclick="renderTimetable('Tuesday')">Tue</button>
+                    <button class="day-tab" onclick="renderTimetable('Wednesday')">Wed</button>
+                    <button class="day-tab" onclick="renderTimetable('Thursday')">Thu</button>
+                    <button class="day-tab" onclick="renderTimetable('Friday')">Fri</button>
+                </div>
+            </div>
+            <div class="content-grid">
+                <div id="timetable-content"></div>
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title">Attendance Analytics</h3>
+                    </div>
+                    <div class="section-content" id="attendance-detailed-list"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6. Activities & Co-curricular -->
+        <div class="dashboard-content content-section" id="section-activities">
+            <div class="welcome-banner">
+                <h2>Activities & Co-curricular</h2>
+                <p>Clubs, Sports, Workshops, and Certificate Uploads</p>
+            </div>
+            <div class="content-grid">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title">My Participations</h3>
+                    </div>
+                    <div class="section-content" id="activities-list"></div>
+                </div>
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title">Upload Achievement</h3>
+                    </div>
+                    <div class="section-content">
+                        <form class="profile-form">
+                            <div class="form-group">
+                                <label>Event Title</label>
+                                <input type="text" placeholder="e.g. NPTEL Data Science">
+                            </div>
+                            <div class="form-group">
+                                <label>Certificate (PDF/Image)</label>
+                                <input type="file">
+                            </div>
+                            <button type="button" class="btn-primary" onclick="alert('File Uploaded!')">Upload
+                                Proof</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 7. Leave & OD -->
+        <div class="dashboard-content content-section" id="section-leave-od">
+            <div class="welcome-banner">
+                <h2>Leave & On-Duty (OD) Management</h2>
+                <p>Apply for medical leave, OD for events, or personal leave with consent</p>
+            </div>
+            <div class="content-grid">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title">New Leave / OD Request</h3>
+                    </div>
+                    <div class="section-content">
+                        <form class="profile-form" id="form-leave-od">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Request Type</label>
+                                    <select class="form-select" id="leave-type" required>
+                                        <option value="">Select Type</option>
+                                        <option>Personal Leave</option>
+                                        <option>Medical Leave</option>
+                                        <option>On-Duty (OD) - Technical</option>
+                                        <option>On-Duty (OD) - Sports</option>
+                                        <option>On-Duty (OD) - Internship Interview</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Date Range</label>
+                                    <input type="text" id="leave-dates" placeholder="dd/mm/yyyy - dd/mm/yyyy" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Reason / Detailed Description</label>
+                                <textarea id="leave-reason" rows="3" required></textarea>
+                            </div>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Upload Proof (Cert/Letter) 🏥</label>
+                                    <input type="file" id="leave-file">
+                                </div>
+                                <div class="form-group">
+                                    <label>Parent/Guardian Consent 👨‍👩‍👧</label>
+                                    <input type="file" id="leave-consent">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn-primary">📩 Submit for Approval</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title">Leave History</h3>
+                    </div>
+                    <div class="section-content" id="leave-history-list"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 8. Parent & Admin -->
+        <div class="dashboard-content content-section" id="section-parent-admin">
+            <div class="welcome-banner">
+                <h2>Administration & Feedback</h2>
+                <p>Submit undertakings, acknowledged library issues, and feedback</p>
+            </div>
+            <div class="content-grid">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title">Admin Forms & Undertakings</h3>
+                    </div>
+                    <div class="section-content">
+                        <form class="profile-form" id="form-admin-upload">
+                            <div class="form-group">
+                                <label>Form Type</label>
+                                <select class="form-select" id="admin-type" required>
+                                    <option value="">Select Category</option>
+                                    <option>Anti-Ragging Undertaking</option>
+                                    <option>Hostel Admission Form</option>
+                                    <option>Library Book Issue Acknowledgment</option>
+                                    <option>Course Feedback Form</option>
+                                    <option>Faculty Feedback Form</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Upload Signed Document 🖋️</label>
+                                <input type="file" id="admin-file" required>
+                            </div>
+                            <button type="submit" class="btn-primary">📤 Submit to Admin</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title">Clearance Status</h3>
+                    </div>
+                    <div class="section-content">
+                        <div class="admin-stats-card">
+                            <p><strong>Library Fine:</strong> ₹ <span id="lib-fine">0.00</span></p>
+                            <p><strong>Mess Dues:</strong> <span id="mess-status">Paid</span></p>
+                            <p><strong>Hostel Room:</strong> <span id="hostel-room">A-304</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 9. My Profile Section -->
+        <div class="dashboard-content content-section" id="section-profile">
+            <div class="welcome-banner">
+                <h2>My Profile</h2>
+                <p>Manage your personal and academic information</p>
+            </div>
+            <div class="profile-container">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title">Personal Details</h3>
+                    </div>
+                    <div class="section-content">
+                        <form id="profile-form" class="profile-form">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Full Name</label>
+                                    <input type="text" id="prof-name" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label>Roll Number</label>
+                                    <input type="text" id="prof-roll" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label>Department</label>
+                                    <input type="text" id="prof-dept" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label>Academic Year</label>
+                                    <input type="text" id="prof-year" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label>Email Address</label>
+                                    <input type="email" id="prof-email" value="john.doe@college.edu">
+                                </div>
+                                <div class="form-group">
+                                    <label>Phone Number</label>
+                                    <input type="tel" id="prof-phone" value="+91 98765 43210">
+                                </div>
+                            </div>
+                            <button type="button" class="btn-primary"
+                                onclick="alert('Profile Updated Successfully!')">Update Profile</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 10. Academic Performance (Marks) Section -->
+        <div class="dashboard-content content-section" id="section-marks">
+            <div class="welcome-banner">
+                <h2>Academic Performance</h2>
+                <p>View your marks and GPA trends</p>
+            </div>
+            <div class="academic-stats">
+                <div class="stat-card">
+                    <div class="stat-label">Overall CGPA</div>
+                    <div class="stat-value" id="marks-cgpa">0.00</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total Credits</div>
+                    <div class="stat-value" id="marks-credits">0</div>
+                </div>
+            </div>
+            <div class="section-card">
+                <div class="section-header">
+                    <div class="semester-tabs" id="marks-semester-tabs"></div>
+                </div>
+                <div class="section-content">
+                    <div class="table-container">
+                        <table class="marks-table">
+                            <thead>
+                                <tr>
+                                    <th>Code</th>
+                                    <th>Subject</th>
+                                    <th>Credits</th>
+                                    <th>Marks</th>
+                                    <th>Grade</th>
+                                    <th>GP</th>
+                                </tr>
+                            </thead>
+                            <tbody id="marks-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="student-data.js"></script>
+    <script src="student-module.js"></script>
+</body>
+
+</html>
