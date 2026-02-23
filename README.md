@@ -34,7 +34,7 @@ A **Smart Academic Administration Platform** designed for modern educational ins
 
 ## 🛠️ Tech Stack
 
-- **Frontend**: HTML5, CSS3 (Glassmorphism), Vanilla JavaScript
+- **Frontend**: React, HTML5, CSS3, JavaScript (Vite)
 - **Design**: SF Pro Display / Inter, Indigo-Violet gradient theme
 - **Storage**: LocalStorage (demo), ready for backend integration
 - **Fonts**: Google Fonts (Poppins, Inter)
@@ -64,9 +64,10 @@ DMS/
 ## 🎯 How to Run
 
 1. Clone this repository
-2. Open `index.html` in your browser
-3. Click **Live Demo** to go to the login page
-4. Select a role (Student / Faculty / HOD / Parent) and sign in
+2. Run `npm install` to install dependencies
+3. Run `npm run dev` to start the development server
+4. Open the provided localhost link in your browser
+5. Click **Live Demo** to go to the login page
 
 ---
 
