@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/faculty.css">
+    <link rel="stylesheet" href="faculty-module.css">
 </head>
 
 <body>
@@ -74,6 +74,12 @@
                     <div class="nav-link" onclick="showSection('add-marks')">
                         <span class="nav-icon">✏️</span>
                         Add TA Marks
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <div class="nav-link" onclick="showSection('submissions')">
+                        <span class="nav-icon">📁</span>
+                        Student Submissions
                     </div>
                 </li>
             </ul>
@@ -390,46 +396,115 @@
             <div class="content-section" id="add-marks">
                 <div class="section-card">
                     <div class="section-header">
-                        <h2 class="section-title">Add TA Marks (Enter Regno)</h2>
-                        <button class="btn-primary" onclick="showModal('marks-modal')">+ Add Marks</button>
+                        <h2 class="section-title">Add TA Marks</h2>
+                        <button class="btn-primary" onclick="showModal('marks-modal')">+ Add New Entry</button>
                     </div>
                     <div class="section-content">
-                        <div class="form-group">
-                            <label class="form-label">Search by Registration Number or Roll Number</label>
-                            <input type="text" class="form-input" placeholder="Enter regno or roll number">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Search Student</label>
+                                <div style="display: flex; gap: 10px;">
+                                    <input type="text" id="marks-search-input" class="form-input"
+                                        placeholder="Roll Number (e.g. CS2024001)">
+                                    <button class="btn-primary" onclick="searchStudentForMarks()">🔍 Search</button>
+                                </div>
+                            </div>
                         </div>
-                        <button class="btn-primary">Search Student</button>
+                        <div id="marks-search-result"
+                            style="margin-top: 15px; display: none; padding: 15px; background: rgba(67, 24, 255, 0.05); border-radius: 12px;">
+                            <p><strong>Name:</strong> <span id="res-name">-</span></p>
+                            <p><strong>Roll:</strong> <span id="res-roll">-</span></p>
+                            <p><strong>CGPA:</strong> <span id="res-cgpa">-</span></p>
+                            <button class="btn-primary" style="margin-top: 10px;" onclick="showModal('marks-modal')">✏️
+                                Enter Marks</button>
+                        </div>
                     </div>
                 </div>
 
-                <div class="section-card" style="margin-top: 24px;">
+                <div class="section-card">
                     <div class="section-header">
                         <h2 class="section-title">Recent Marks Entry</h2>
                     </div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Roll No</th>
-                                <th>Name</th>
-                                <th>Course</th>
-                                <th>TA Marks</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>CS2024001</td>
-                                <td>John Doe</td>
-                                <td>Data Structures</td>
-                                <td>18/20</td>
-                                <td><button class="btn-edit">Edit</button></td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Roll No</th>
+                                    <th>Name</th>
+                                    <th>Course</th>
+                                    <th>TA Marks</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recent-marks-list">
+                                <tr>
+                                    <td>CS2024001</td>
+                                    <td>John Doe</td>
+                                    <td>Data Structures</td>
+                                    <td>18/20</td>
+                                    <td><button class="btn-view">Details</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Student Submissions Section -->
+            <div class="content-section" id="submissions">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h2 class="section-title">Academic & Document Submissions</h2>
+                        <div class="filter-group" style="display: flex; gap: 10px;">
+                            <select id="sub-filter-category" class="form-select"
+                                style="padding: 4px 12px; width: 150px;">
+                                <option value="All">All Categories</option>
+                                <option value="Academic">Academic</option>
+                                <option value="Certificate">Certificate</option>
+                                <option value="Leave">Leave / OD</option>
+                                <option value="Admin">Admin</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="table-container" style="overflow-x: auto;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Student</th>
+                                    <th>Category</th>
+                                    <th>Type</th>
+                                    <th>Title / Purpose</th>
+                                    <th>Time</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="faculty-submissions-list">
+                                <!-- Will be populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
     </main>
+
+    <!-- Submissions Detail Modal -->
+    <div class="modal" id="sub-detail-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Submission Details</h2>
+                <button class="modal-close" onclick="hideModal('sub-detail-modal')">×</button>
+            </div>
+            <div id="sub-detail-content" style="padding: 20px 0;">
+                <!-- Content here -->
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="btn-primary" id="btn-approve-sub" style="background: #10b981;">Approve / Sign</button>
+                <button class="btn-primary" id="btn-reject-sub" style="background: #ef4444;">Reject</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Add Marks Modal -->
     <div class="modal" id="marks-modal">
@@ -466,7 +541,7 @@
         </div>
     </div>
 
-    <script src="assets/js/faculty.js"></script>
+    <script src="faculty-module.js"></script>
 </body>
 
 </html>
