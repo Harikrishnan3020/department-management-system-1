@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Department Management System - A comprehensive platform for managing academic activities.">
+    <title>Department Management System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/dashboard.css">
+</head>
+
+<body>
+    <!-- Mobile Menu Toggle -->
+    <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+
+    <!-- Overlay -->
+    <div class="overlay" onclick="toggleSidebar()"></div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-title">DMS</div>
+            <div class="sidebar-subtitle">Management Portal</div>
+        </div>
+        <nav>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#" class="nav-link active">
+                        <span class="nav-icon">📊</span>
+                        Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <span class="nav-icon">🏢</span>
+                        Departments
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <span class="nav-icon">👨‍🏫</span>
+                        Faculty
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <span class="nav-icon">👨‍🎓</span>
+                        Students
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <span class="nav-icon">📚</span>
+                        Courses
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <span class="nav-icon">✅</span>
+                        Attendance
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <span class="nav-icon">📈</span>
+                        Results
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <span class="nav-icon">⚙️</span>
+                        Settings
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="header">
+            <h1 class="header-title">Department Management System</h1>
+            <div class="header-actions">
+                <button class="btn-primary">+ Add Department</button>
+            </div>
+        </header>
+
+        <!-- Dashboard Content -->
+        <div class="dashboard-content">
+            <!-- Welcome Banner with Role-Based Navigation -->
+            <div
+                style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 32px; border-radius: 16px; color: #fff; margin-bottom: 32px;">
+                <h2 style="font-size: 24px; font-weight: 700; margin-bottom: 12px;" id="welcomeText">Welcome to DMS!
+                </h2>
+                <p style="font-size: 16px; opacity: 0.95; margin-bottom: 20px;">Quick access to your personalized
+                    dashboard</p>
+                <div style="display: flex; gap: 12px; flex-wrap: wrap;" id="quickAccessButtons">
+                    <!-- Buttons will be added dynamically based on role -->
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">🏢</div>
+                    <div class="stat-label">Total Departments</div>
+                    <div class="stat-value">12</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">👨‍🏫</div>
+                    <div class="stat-label">Total Faculty</div>
+                    <div class="stat-value">156</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">👨‍🎓</div>
+                    <div class="stat-label">Total Students</div>
+                    <div class="stat-value">2,847</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📚</div>
+                    <div class="stat-label">Total Courses</div>
+                    <div class="stat-value">89</div>
+                </div>
+            </div>
+
+            <!-- Departments Table -->
+            <div class="table-section">
+                <div class="table-header">
+                    <h2 class="table-title">Departments Overview</h2>
+                    <div class="search-box">
+                        <span>🔍</span>
+                        <input type="text" placeholder="Search departments...">
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Department ID</th>
+                                <th>Department Name</th>
+                                <th>HOD Name</th>
+                                <th>Faculty Count</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="dept-id">DEPT-001</td>
+                                <td class="dept-name">Computer Science & Engineering</td>
+                                <td>Dr. Rajesh Kumar</td>
+                                <td><span class="badge">24 Faculty</span></td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn-edit">Edit</button>
+                                        <button class="btn-delete">Delete</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="dept-id">DEPT-002</td>
+                                <td class="dept-name">Electronics & Communication</td>
+                                <td>Dr. Priya Sharma</td>
+                                <td><span class="badge">18 Faculty</span></td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn-edit">Edit</button>
+                                        <button class="btn-delete">Delete</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="dept-id">DEPT-003</td>
+                                <td class="dept-name">Mechanical Engineering</td>
+                                <td>Dr. Arun Patel</td>
+                                <td><span class="badge">16 Faculty</span></td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn-edit">Edit</button>
+                                        <button class="btn-delete">Delete</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="dept-id">DEPT-004</td>
+                                <td class="dept-name">Civil Engineering</td>
+                                <td>Dr. Sunita Reddy</td>
+                                <td><span class="badge">14 Faculty</span></td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn-edit">Edit</button>
+                                        <button class="btn-delete">Delete</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="dept-id">DEPT-005</td>
+                                <td class="dept-name">Electrical Engineering</td>
+                                <td>Dr. Vikram Singh</td>
+                                <td><span class="badge">15 Faculty</span></td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn-edit">Edit</button>
+                                        <button class="btn-delete">Delete</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="dept-id">DEPT-006</td>
+                                <td class="dept-name">Information Technology</td>
+                                <td>Dr. Meera Iyer</td>
+                                <td><span class="badge">20 Faculty</span></td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn-edit">Edit</button>
+                                        <button class="btn-delete">Delete</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="dept-id">DEPT-007</td>
+                                <td class="dept-name">Chemical Engineering</td>
+                                <td>Dr. Anand Gupta</td>
+                                <td><span class="badge">12 Faculty</span></td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn-edit">Edit</button>
+                                        <button class="btn-delete">Delete</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="dept-id">DEPT-008</td>
+                                <td class="dept-name">Biotechnology</td>
+                                <td>Dr. Kavita Nair</td>
+                                <td><span class="badge">10 Faculty</span></td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn-edit">Edit</button>
+                                        <button class="btn-delete">Delete</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="dept-id">DEPT-009</td>
+                                <td class="dept-name">Mathematics</td>
+                                <td>Dr. Ramesh Verma</td>
+                                <td><span class="badge">8 Faculty</span></td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn-edit">Edit</button>
+                                        <button class="btn-delete">Delete</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="dept-id">DEPT-010</td>
+                                <td class="dept-name">Physics</td>
+                                <td>Dr. Lakshmi Menon</td>
+                                <td><span class="badge">9 Faculty</span></td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn-edit">Edit</button>
+                                        <button class="btn-delete">Delete</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="dept-id">DEPT-011</td>
+                                <td class="dept-name">Chemistry</td>
+                                <td>Dr. Suresh Rao</td>
+                                <td><span class="badge">7 Faculty</span></td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn-edit">Edit</button>
+                                        <button class="btn-delete">Delete</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="dept-id">DEPT-012</td>
+                                <td class="dept-name">Management Studies</td>
+                                <td>Dr. Neha Kapoor</td>
+                                <td><span class="badge">13 Faculty</span></td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn-edit">Edit</button>
+                                        <button class="btn-delete">Delete</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="assets/js/dashboard.js"></script>
+</body>
+
+</html>
