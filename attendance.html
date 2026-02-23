@@ -653,7 +653,8 @@
                 <div class="od-preview">
                     <span>📬</span>
                     <div>A notification will be automatically sent to your <strong>Class Faculty</strong> and
-                        <strong>HOD</strong> for approval. You'll be notified once approved.</div>
+                        <strong>HOD</strong> for approval. You'll be notified once approved.
+                    </div>
                 </div>
             </div>
 
@@ -770,6 +771,13 @@
             const records = JSON.parse(localStorage.getItem('attendanceRecords') || '[]');
             records.push(record);
             localStorage.setItem('attendanceRecords', JSON.stringify(records));
+
+            // Mark as marked in session
+            const sData = JSON.parse(localStorage.getItem('studentData') || '{}');
+            sData.attendanceMarked = true;
+            sData.attendanceTime = timeStr;
+            sData.attendanceDate = now.toISOString();
+            localStorage.setItem('studentData', JSON.stringify(sData));
 
             // OD notification simulation
             if (selectedStatus === 'od') {
