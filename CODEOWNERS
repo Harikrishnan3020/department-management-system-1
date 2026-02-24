@@ -1,0 +1,13 @@
+# These owners will be the default owners for everything in the repo.
+* @Harikrishnan3020
+
+# Order is important; the last matching pattern takes the most precedence.
+
+# JS files
+*.js @Harikrishnan3020
+
+# CSS files
+*.css @Harikrishnan3020
+
+# HTML files
+*.html @Harikrishnan3020
