@@ -65,12 +65,13 @@ const Courses = () => {
     };
 
     const handleSave = () => {
-        if (selectedCourse.id === editForm.id && !courses.find(c => c.id === editForm.id)) {
-            // New Course
-            setCourses([...courses, editForm]);
+        const exists = courses.some(c => c.id === editForm.id);
+        if (!exists) {
+            // New Course — add to list
+            setCourses(prev => [...prev, editForm]);
         } else {
-            // Update
-            setCourses(courses.map(c => c.id === editForm.id ? editForm : c));
+            // Existing course — update in place
+            setCourses(prev => prev.map(c => c.id === editForm.id ? editForm : c));
         }
         setSelectedCourse(editForm);
         setIsEditing(false);
