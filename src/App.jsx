@@ -9,7 +9,9 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Departments from './pages/Departments';
 import Faculty from './pages/Faculty';
+import FacultyProfile from './pages/FacultyProfile';
 import Students from './pages/Students';
+import StudentProfile from './pages/StudentProfile';
 import Courses from './pages/Courses';
 import Attendance from './pages/Attendance';
 import ExamResult from './pages/ExamResult';
@@ -17,6 +19,8 @@ import Magazine from './pages/Magazine';
 import GoogleForm from './pages/GoogleForm';
 import Coursera from './pages/Coursera';
 import Fees from './pages/Fees';
+import Timetable from './pages/Timetable';
+import AcademicCalendar from './pages/AcademicCalendar';
 
 function App() {
     return (
@@ -44,6 +48,10 @@ function App() {
                         <Route path="/google-form" element={<GoogleForm />} />
                         <Route path="/coursera" element={<Coursera />} />
                         <Route path="/fees" element={<Fees />} />
+                        <Route path="/timetable" element={<Timetable />} />
+                        <Route path="/academic-calendar" element={<AcademicCalendar />} />
+                        <Route path="/students/:rollNo" element={<StudentProfile />} />
+                        <Route path="/faculty/:id" element={<FacultyProfile />} />
                     </Route>
                 </Routes>
             </div>

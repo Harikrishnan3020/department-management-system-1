@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LayoutDashboard, Building2, Users, GraduationCap, BookOpen, LogOut, Menu, X, Bell, Search, FileText, CalendarCheck, FileBadge, Link as LinkIcon, MonitorPlay, CreditCard } from 'lucide-react';
+import { LayoutDashboard, Building2, Users, GraduationCap, BookOpen, LogOut, Menu, X, Bell, Search, FileText, CalendarCheck, FileBadge, Link as LinkIcon, MonitorPlay, CreditCard, CalendarDays, CalendarRange, UserCircle2 } from 'lucide-react';
 import { AppContext } from '../context/AppContext';
 
 const DashboardLayout = () => {
@@ -36,6 +36,7 @@ const DashboardLayout = () => {
     } else if (currentUser.role === 'Student') {
         navItems = [
             { path: '/dashboard', label: 'Overview', icon: LayoutDashboard },
+            { path: `/students/${currentUser.id}`, label: 'My Profile', icon: UserCircle2 },
             { path: '/courses', label: 'Courses', icon: BookOpen },
             { path: '/attendance', label: 'Attendance', icon: CalendarCheck },
             { path: '/exam-result', label: 'Exam Result', icon: FileText },
