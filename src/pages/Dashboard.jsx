@@ -41,20 +41,6 @@ const Dashboard = () => {
         { title: 'Active Courses', value: 312, icon: BookOpen, color: 'luxury-gold', trend: '+8%' },
     ];
 
-    const handleApproveOD = (notifIndex, studentId) => {
-        // Find attendance record
-        setAttendance(prev => prev.map(a => (a.studentId === studentId && a.status === 'OD Pending') ? { ...a, status: 'OD Approved' } : a));
-        // Remove notification
-        setNotifications(prev => prev.filter((_, i) => i !== notifIndex));
-        alert('OD Request Approved');
-    };
-
-    const handleRejectOD = (notifIndex, studentId) => {
-        setAttendance(prev => prev.map(a => (a.studentId === studentId && a.status === 'OD Pending') ? { ...a, status: 'OD Rejected' } : a));
-        setNotifications(prev => prev.filter((_, i) => i !== notifIndex));
-        alert('OD Request Rejected');
-    };
-
     const containerVariants = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.1 } } };
     const itemVariants = { hidden: { y: 20, opacity: 0 }, show: { y: 0, opacity: 1, transition: { type: "spring", stiffness: 300 } } };
 
@@ -97,52 +83,14 @@ const Dashboard = () => {
                 })}
             </motion.div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Notifications Panel (Action Center - Moved to Left) */}
-                {isAuthorized && (
-                    <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="glass-card rounded-[2rem] border border-glass-border shadow-glass-card p-6 flex flex-col h-96">
-                        <h2 className="text-xl font-bold text-white flex items-center space-x-2 mb-6">
-                            <Bell className="text-luxury-gold" size={20} />
-                            <span>Action Center</span>
-                        </h2>
-
-                        <div className="flex-1 overflow-y-auto space-y-4 pr-2 custom-scrollbar">
-                            {notifications.length === 0 ? (
-                                <div className="text-center text-slate-500 py-8">No pending actions.</div>
-                            ) : (
-                                notifications.map((notif, i) => (
-                                    <div key={i} className="bg-slate-900/60 border border-white/5 p-4 rounded-xl hover:bg-white/5 transition-colors">
-                                        <div className="flex items-start justify-between">
-                                            <div>
-                                                <h4 className="text-white font-bold text-sm mb-1">{notif.type}</h4>
-                                                <p className="text-xs text-slate-400 mb-3">{notif.message}</p>
-                                            </div>
-                                        </div>
-                                        {notif.type.includes('OD Request') && (
-                                            <div className="flex space-x-2 border-t border-white/5 pt-3 mt-3">
-                                                <button onClick={() => handleRejectOD(i, notif.from)} className="flex-1 py-1.5 bg-rose-500/10 text-rose-500 rounded text-xs font-bold hover:bg-rose-500/20 border border-rose-500/30 flex items-center justify-center space-x-1 transition-colors">
-                                                    <XCircle size={14} /><span>Reject</span>
-                                                </button>
-                                                <button onClick={() => handleApproveOD(i, notif.from)} className="flex-1 py-1.5 bg-emerald-glow/10 text-emerald-glow rounded text-xs font-bold hover:bg-emerald-glow/20 border border-emerald-glow/30 flex items-center justify-center space-x-1 transition-colors">
-                                                    <CheckCircle size={14} /><span>Approve</span>
-                                                </button>
-                                            </div>
-                                        )}
-                                        {notif.type.includes('Paper Request') || notif.type.includes('Absent Alert') || notif.type.includes('Coursera') || notif.type.includes('Google Form') ? (
-                                            <div className="mt-2 text-xs font-bold text-electric-blue border-t border-white/5 pt-2">System Notification</div>
-                                        ) : null}
-                                    </div>
-                                ))
-                            )}
-                        </div>
-                    </motion.div>
-                )}
-
-                {/* Analytics */}
-                <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className={`${isAuthorized ? 'lg:col-span-2' : 'lg:col-span-3'} w-full h-96 glass-card rounded-[2rem] border border-glass-border shadow-glass-card p-8 flex flex-col relative overflow-hidden`}>
+            <div className="w-full">
+                <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="w-full h-96 glass-card rounded-[2rem] border border-glass-border shadow-glass-card p-8 flex flex-col relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-96 h-96 bg-royal-purple/5 blur-[100px] rounded-full pointer-events-none"></div>
-                    <div className="flex justify-between items-center mb-8 relative z-10">
-                        <h2 className="text-2xl font-bold text-white">System Analytics</h2>
+                    <div className="flex justify-between items-start mb-8 relative z-10">
+                        <div>
+                            <h2 className="text-2xl font-bold text-white mb-1">System Analytics</h2>
+                            <p className="text-sm font-medium text-slate-400">Visualization of platform load and monthly active users.</p>
+                        </div>
                         <div className="flex space-x-2">
                             {['1W', '1M', '3M', '1Y'].map((t) => (
                                 <button key={t} className="px-3 py-1 text-sm rounded-lg hover:bg-white/10 text-slate-400 hover:text-white transition font-medium">

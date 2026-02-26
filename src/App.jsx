@@ -21,6 +21,7 @@ import Coursera from './pages/Coursera';
 import Fees from './pages/Fees';
 import Timetable from './pages/Timetable';
 import AcademicCalendar from './pages/AcademicCalendar';
+import Notifications from './pages/Notifications';
 
 function App() {
     return (
@@ -38,6 +39,7 @@ function App() {
                     {/* Secured Dashboard */}
                     <Route element={<DashboardLayout />}>
                         <Route path="/dashboard" element={<Dashboard />} />
+                        <Route path="/notifications" element={<Notifications />} />
                         <Route path="/departments" element={<Departments />} />
                         <Route path="/faculty" element={<Faculty />} />
                         <Route path="/students" element={<Students />} />

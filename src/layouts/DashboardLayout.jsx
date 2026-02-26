@@ -8,7 +8,7 @@ const DashboardLayout = () => {
     const [isSidebarOpen, setSidebarOpen] = useState(true);
     const location = useLocation();
     const navigate = useNavigate();
-    const { currentUser, logout } = useContext(AppContext);
+    const { currentUser, logout, notifications } = useContext(AppContext);
 
     useEffect(() => {
         if (!currentUser) {
@@ -159,10 +159,15 @@ const DashboardLayout = () => {
                         </div>
                     </div>
 
-                    <div className="flex items-center space-x-6">
-                        <button className="relative p-2 text-slate-300 hover:text-white transition">
+                    <div className="flex items-center space-x-6 relative">
+                        <button
+                            onClick={() => navigate('/notifications')}
+                            className="relative p-2 text-slate-300 flex items-center hover:text-white transition cursor-pointer"
+                        >
                             <Bell size={22} />
-                            <span className="absolute top-1 right-1.5 w-2 h-2 bg-rose-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(244,63,94,0.8)]"></span>
+                            {notifications && notifications.length > 0 && (
+                                <span className="absolute top-1 right-1.5 w-2 h-2 bg-rose-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(244,63,94,0.8)]"></span>
+                            )}
                         </button>
                         <div className="flex items-center space-x-3 cursor-pointer group">
                             <div className="text-right hidden sm:block">
