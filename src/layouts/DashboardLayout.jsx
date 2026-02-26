@@ -43,6 +43,8 @@ const DashboardLayout = () => {
             { path: '/google-form', label: 'Google Forms', icon: LinkIcon },
             { path: '/coursera', label: 'Coursera Hub', icon: MonitorPlay },
             { path: '/fees', label: 'My Fees', icon: CreditCard },
+            { path: '/timetable', label: 'Timetable', icon: CalendarDays },
+            { path: '/academic-calendar', label: 'Academic Calendar', icon: CalendarRange },
         ];
     }
 

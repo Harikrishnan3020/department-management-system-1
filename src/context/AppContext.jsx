@@ -110,13 +110,27 @@ export const AppProvider = ({ children }) => {
         if (!saved || !saved[0]?.email) return defaultStudents;
         return saved;
     });
-    const [departments, setDepartments] = useState(() => JSON.parse(localStorage.getItem('departments')) || [
+    const defaultDepartments = [
         { id: 'CSE', name: 'Computer Science & Engineering', head: 'Dr. Alan Turing', faculty: 42, students: 850, status: 'Active' },
         { id: 'ECE', name: 'Electronics & Communication', head: 'Dr. Ada Lovelace', faculty: 35, students: 620, status: 'Active' },
         { id: 'MEC', name: 'Mechanical Engineering', head: 'Dr. Nikola Tesla', faculty: 28, students: 540, status: 'Active' },
         { id: 'CIV', name: 'Civil Engineering', head: 'Dr. Isambard Brunel', faculty: 22, students: 480, status: 'Maintenance' },
         { id: 'AIML', name: 'Artificial Intelligence & ML', head: 'Dr. Geoffrey Hinton', faculty: 18, students: 300, status: 'Active' },
-    ]);
+    ];
+
+    const [departments, setDepartments] = useState(() => {
+        const saved = JSON.parse(localStorage.getItem('departments'));
+        if (!saved || saved.length === 0) return defaultDepartments;
+
+        // Ensure default core departments exist
+        const merged = [...saved];
+        defaultDepartments.forEach(defDept => {
+            if (!merged.find(d => d.id === defDept.id)) {
+                merged.push(defDept);
+            }
+        });
+        return merged;
+    });
     const [courses, setCourses] = useState(() => JSON.parse(localStorage.getItem('courses')) || [
         { id: 1, code: 'CS101', name: 'Introduction to Computer Science', credits: 4, faculty: 'Dr. Smith', desc: 'Basic concepts of CS.', outcome: 'Students will understand basics of algorithms and data structures.' },
         { id: 2, code: 'CS102', name: 'Data Structures', credits: 4, faculty: 'Prof. Johnson', desc: 'Advanced topic in DS.', outcome: 'Students will master trees, graphs, and hash tables.' }

@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
     GraduationCap, ArrowLeft, Mail, Phone, MapPin, Calendar, Droplet,
     Edit2, X, Save, Star, BookOpen, Award, User, CheckCircle, XCircle,
-    Cpu, ChevronRight
+    Cpu, ChevronRight, Users
 } from 'lucide-react';
 import { AppContext } from '../context/AppContext';
 
@@ -182,6 +182,8 @@ const StudentProfile = () => {
                             <Field label="Date of Birth" value={student.dob ? new Date(student.dob).toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' }) : '—'} icon={Calendar} color="luxury-gold" />
                             <Field label="Blood Group" value={student.bloodGroup} icon={Droplet} color="rose-400" />
                             <Field label="Address" value={student.address} icon={MapPin} color="emerald-glow" />
+                            <Field label="Parent's Name" value={student.parentName} icon={Users} color="electric-blue" />
+                            <Field label="Parent's Phone" value={student.parentPhone} icon={Phone} color="royal-purple" />
                         </div>
                     </div>
 
@@ -255,6 +257,8 @@ const StudentProfile = () => {
                                 <EditInput label="Full Name" value={editForm.name} onChange={v => setEditForm({ ...editForm, name: v })} />
                                 <EditInput label="Email" value={editForm.email} onChange={v => setEditForm({ ...editForm, email: v })} type="email" />
                                 <EditInput label="Phone" value={editForm.phone} onChange={v => setEditForm({ ...editForm, phone: v })} />
+                                <EditInput label="Parent's Name" value={editForm.parentName} onChange={v => setEditForm({ ...editForm, parentName: v })} />
+                                <EditInput label="Parent's Phone" value={editForm.parentPhone} onChange={v => setEditForm({ ...editForm, parentPhone: v })} />
                                 <EditInput label="Date of Birth" value={editForm.dob} onChange={v => setEditForm({ ...editForm, dob: v })} type="date" />
                                 <EditInput label="Blood Group" value={editForm.bloodGroup} onChange={v => setEditForm({ ...editForm, bloodGroup: v })} />
                                 <EditInput label="Address" value={editForm.address} onChange={v => setEditForm({ ...editForm, address: v })} />
@@ -266,7 +270,6 @@ const StudentProfile = () => {
                                     </>
                                 )}
                                 <EditInput label="Skills (comma separated)" value={editForm.skills} onChange={v => setEditForm({ ...editForm, skills: v })} />
-                                <EditInput label="Avatar URL" value={editForm.avatar} onChange={v => setEditForm({ ...editForm, avatar: v })} />
                             </div>
                             <button
                                 onClick={handleSave}

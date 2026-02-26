@@ -96,43 +96,22 @@ const PortfolioLanding = () => {
                     initial={{ opacity: 0, y: 150, rotateX: 20 }}
                     animate={{ opacity: 1, y: 0, rotateX: 0 }}
                     transition={{ duration: 1.5, delay: 0.2, type: "spring" }}
+                    style={{ y: useTransform(scrollY, [0, 800], [0, -50]), scale: useTransform(scrollY, [0, 800], [1, 1.05]) }}
                     className="mt-24 relative w-full max-w-6xl rounded-[2.5rem] p-4 glass-card border border-glass-border shadow-[0_30px_100px_rgba(0,0,0,0.8)] perspective-1000 mx-auto group"
                 >
                     {/* Animated border line */}
                     <div className="absolute top-0 left-1/4 w-1/2 h-[2px] bg-gradient-to-r from-transparent via-electric-blue to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
 
                     <div className="rounded-[2rem] overflow-hidden bg-slate-900 border border-slate-700 relative aspect-video flex items-center justify-center">
-                        {/* Realistically, this would be an image or video, but we use a sleek UI mockup */}
-                        <div className="absolute inset-0 bg-slate-950 flex flex-col">
-                            {/* Fake topbar */}
-                            <div className="h-12 border-b border-white/5 flex items-center px-4 space-x-2">
-                                <div className="w-3 h-3 rounded-full bg-rose-500"></div>
-                                <div className="w-3 h-3 rounded-full bg-amber-500"></div>
-                                <div className="w-3 h-3 rounded-full bg-emerald-500"></div>
-                            </div>
-                            <div className="flex-1 flex p-4 space-x-4">
-                                {/* Fake Sidebar */}
-                                <div className="w-48 bg-slate-900/50 rounded-xl border border-white/5 p-4 space-y-4 pb-20">
-                                    <div className="w-full h-8 bg-slate-800 rounded-lg"></div>
-                                    <div className="w-3/4 h-4 bg-slate-800 rounded-md"></div>
-                                    <div className="w-5/6 h-4 bg-slate-800 rounded-md"></div>
-                                    <div className="w-full h-4 bg-royal-purple/50 rounded-md shadow-glow-purple"></div>
-                                </div>
-                                {/* Fake main */}
-                                <div className="flex-1 flex flex-col space-y-4">
-                                    <div className="h-24 flex space-x-4">
-                                        <div className="flex-1 bg-electric-blue/10 rounded-xl border border-electric-blue/20 p-4"></div>
-                                        <div className="flex-1 bg-emerald-glow/10 rounded-xl border border-emerald-glow/20 p-4"></div>
-                                        <div className="flex-1 bg-luxury-gold/10 rounded-xl border border-luxury-gold/20 p-4"></div>
-                                    </div>
-                                    <div className="flex-1 bg-slate-900/50 rounded-xl border border-white/5 flex p-4 space-x-4">
-                                        <div className="flex-1 rounded-xl bg-slate-800/50 relative overflow-hidden">
-                                            <div className="absolute bottom-0 left-0 w-full h-2/3 bg-gradient-to-t from-electric-blue/20 to-transparent"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <video
+                            src="/The_college_students_1080p_202601212125.mp4"
+                            autoPlay
+                            loop
+                            muted
+                            playsInline
+                            className="w-full h-full object-cover transition-transform duration-1000 ease-in-out group-hover:scale-105"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent pointer-events-none"></div>
                     </div>
                 </motion.div>
             </motion.section>
