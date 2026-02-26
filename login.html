@@ -58,8 +58,6 @@
             pointer-events: none;
             animation: orbFloat 12s ease-in-out infinite;
             z-index: 0;
-            will-change: transform;
-            transform: translateZ(0);
         }
 
         .orb-1 {
@@ -115,7 +113,6 @@
             opacity: 0;
             animation: sparkle var(--dur, 4s) var(--delay, 0s) ease-in-out infinite;
             z-index: 0;
-            will-change: transform, opacity;
         }
 
         @keyframes sparkle {
@@ -577,7 +574,7 @@
 
     <script>
         // Generate sparkles
-        for (let i = 0; i < 30; i++) {
+        for (let i = 0; i < 60; i++) {
             const s = document.createElement('div');
             s.className = 'sparkle';
             s.style.left = Math.random() * 100 + '%';

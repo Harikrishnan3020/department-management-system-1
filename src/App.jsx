@@ -9,7 +9,9 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Departments from './pages/Departments';
 import Faculty from './pages/Faculty';
+import FacultyProfile from './pages/FacultyProfile';
 import Students from './pages/Students';
+import StudentProfile from './pages/StudentProfile';
 import Courses from './pages/Courses';
 import Attendance from './pages/Attendance';
 import ExamResult from './pages/ExamResult';
@@ -48,6 +50,8 @@ function App() {
                         <Route path="/fees" element={<Fees />} />
                         <Route path="/timetable" element={<Timetable />} />
                         <Route path="/academic-calendar" element={<AcademicCalendar />} />
+                        <Route path="/students/:rollNo" element={<StudentProfile />} />
+                        <Route path="/faculty/:id" element={<FacultyProfile />} />
                     </Route>
                 </Routes>
             </div>

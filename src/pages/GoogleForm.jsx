@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link as LinkIcon, Plus, Send, Copy, Eye, Clock, User, Bell, CheckCircle } from 'lucide-react';
+import { Link as LinkIcon, Plus, Send, Copy, Eye, Clock, User, Bell } from 'lucide-react';
 import { AppContext } from '../context/AppContext';
 
 const GoogleForm = () => {
@@ -106,27 +106,10 @@ const GoogleForm = () => {
                             <p className="text-slate-400 text-sm flex items-center space-x-2"><User size={14} /><span>Sent by: {form.createdBy}</span></p>
                             {form.deadline && <p className="text-rose-400 text-sm flex items-center space-x-2"><Clock size={14} /><span>Due: {form.deadline}</span></p>}
                         </div>
-                        <div className="mt-auto space-y-3">
-                            <a href={form.link} target="_blank" rel="noopener noreferrer" className="w-full py-3 bg-white/5 border border-white/10 rounded-xl font-bold flex items-center justify-center space-x-2 hover:bg-royal-purple/20 hover:border-royal-purple/50 transition-colors text-white">
-                                <Eye size={18} />
-                                <span>Fill Google Form</span>
-                            </a>
-                            {!isAuthorized && (
-                                <button
-                                    onClick={() => {
-                                        setNotifications(prev => [
-                                            { type: 'Form Completed', from: currentUser.id, message: `${currentUser.name} has completed the form: ${form.title}` },
-                                            ...prev
-                                        ]);
-                                        alert(`Notified faculty that you completed: ${form.title}`);
-                                    }}
-                                    className="w-full py-2 bg-emerald-500/10 border border-emerald-500/30 rounded-xl font-bold flex items-center justify-center space-x-2 text-emerald-400 hover:bg-emerald-500/20 transition-colors"
-                                >
-                                    <CheckCircle size={16} />
-                                    <span>Mark as Done</span>
-                                </button>
-                            )}
-                        </div>
+                        <a href={form.link} target="_blank" rel="noopener noreferrer" className="w-full py-3 bg-white/5 border border-white/10 rounded-xl font-bold flex items-center justify-center space-x-2 hover:bg-royal-purple/20 hover:border-royal-purple/50 transition-colors text-white mt-auto">
+                            <Eye size={18} />
+                            <span>Fill Google Form</span>
+                        </a>
                     </motion.div>
                 ))}
                 {googleForms.length === 0 && (

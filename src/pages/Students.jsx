@@ -1,29 +1,33 @@
 import React, { useState, useContext } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { GraduationCap, Search, Filter, ChevronLeft, ChevronRight, Edit2, CheckCircle, XCircle, AlertCircle, Plus, Save, UploadCloud } from 'lucide-react';
+import { GraduationCap, Search, Edit2, Plus, Save, UploadCloud, ChevronRight } from 'lucide-react';
 import { AppContext } from '../context/AppContext';
+import { useNavigate } from 'react-router-dom';
 
 const Students = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const { students, setStudents, currentUser } = useContext(AppContext);
+    const navigate = useNavigate();
 
     const isAuthorized = currentUser?.role === 'Admin' || currentUser?.role === 'Faculty';
     const [editingRoll, setEditingRoll] = useState(null);
     const [editForm, setEditForm] = useState({ rollNo: '', name: '' });
 
-    const handleEdit = (student) => {
+    const handleEdit = (e, student) => {
+        e.stopPropagation();
         setEditingRoll(student.rollNo);
         setEditForm({ rollNo: student.rollNo, name: student.name });
     };
 
-    const handleSave = () => {
+    const handleSave = (e) => {
+        e.stopPropagation();
         setStudents(prev => prev.map(s => s.rollNo === editingRoll ? { ...s, name: editForm.name } : s));
         setEditingRoll(null);
     };
 
     const handleAdd = () => {
         const newRoll = `NEW${Math.floor(Math.random() * 1000)}`;
-        setStudents(prev => [{ rollNo: newRoll, name: 'New Student' }, ...prev]);
+        setStudents(prev => [{ rollNo: newRoll, name: 'New Student', email: '', phone: '', skills: [], cgpa: '0.0', year: '1st Year', section: 'A', avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${newRoll}` }, ...prev]);
         setEditingRoll(newRoll);
         setEditForm({ rollNo: newRoll, name: 'New Student' });
     };
@@ -31,21 +35,21 @@ const Students = () => {
     const handleFileUpload = (e) => {
         const file = e.target.files[0];
         if (!file) return;
-
-        // Simulating parsing a CSV/Excel file and extracting data
         alert(`Parsing file: ${file.name}...`);
         setTimeout(() => {
             const randomStudents = [
-                { rollNo: `24UAM${Math.floor(Math.random() * 800) + 200}`, name: 'Uploaded Student Alpha' },
-                { rollNo: `24UAM${Math.floor(Math.random() * 800) + 200}`, name: 'Uploaded Student Beta' },
-                { rollNo: `24UAM${Math.floor(Math.random() * 800) + 200}`, name: 'Uploaded Student Gamma' }
+                { rollNo: `24UAM${Math.floor(Math.random() * 800) + 200}`, name: 'Uploaded Student Alpha', email: '', phone: '', skills: [], cgpa: '7.5', year: '2nd Year', section: 'A', avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=alpha` },
+                { rollNo: `24UAM${Math.floor(Math.random() * 800) + 200}`, name: 'Uploaded Student Beta', email: '', phone: '', skills: [], cgpa: '7.5', year: '2nd Year', section: 'A', avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=beta` },
             ];
             setStudents(prev => [...randomStudents, ...prev]);
             alert(`Successfully imported ${randomStudents.length} students from ${file.name}!`);
         }, 800);
     };
 
-    const filteredStudents = students.filter(s => s.name.toLowerCase().includes(searchTerm.toLowerCase()) || s.rollNo.toLowerCase().includes(searchTerm.toLowerCase()));
+    const filteredStudents = students.filter(s =>
+        s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        s.rollNo.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     return (
         <div className="space-y-6">
@@ -56,7 +60,7 @@ const Students = () => {
                         <GraduationCap className="text-emerald-glow" size={32} />
                         <span>Student Roster</span>
                     </h1>
-                    <p className="text-slate-400 mt-2 font-medium">Comprehensive view of enrolled students and metrics.</p>
+                    <p className="text-slate-400 mt-2 font-medium">Click any row to view full profile.</p>
                 </div>
                 {isAuthorized && (
                     <div className="flex space-x-3 relative z-10">
@@ -85,6 +89,7 @@ const Students = () => {
                             className="w-full bg-slate-900/60 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white focus:outline-none focus:border-emerald-glow/50 focus:ring-1 focus:ring-emerald-glow transition-all"
                         />
                     </div>
+                    <span className="text-sm text-slate-400 font-semibold">{filteredStudents.length} students</span>
                 </div>
 
                 <div className="overflow-x-auto">
@@ -93,6 +98,8 @@ const Students = () => {
                             <tr className="border-b border-white/10 text-slate-400 text-sm tracking-wider uppercase">
                                 <th className="py-4 px-6 font-semibold whitespace-nowrap">Roll No</th>
                                 <th className="py-4 px-6 font-semibold whitespace-nowrap">Student Name</th>
+                                <th className="py-4 px-6 font-semibold whitespace-nowrap">CGPA</th>
+                                <th className="py-4 px-6 font-semibold whitespace-nowrap">Year</th>
                                 {isAuthorized && <th className="py-4 px-6 font-semibold whitespace-nowrap text-right">Actions</th>}
                             </tr>
                         </thead>
@@ -104,31 +111,50 @@ const Students = () => {
                                         initial={{ opacity: 0, x: -10 }}
                                         animate={{ opacity: 1, x: 0 }}
                                         transition={{ delay: index * 0.02 }}
-                                        className="border-b border-white/5 hover:bg-white/[0.04] transition-colors group"
+                                        onClick={() => editingRoll !== student.rollNo && navigate(`/students/${student.rollNo}`)}
+                                        className="border-b border-white/5 hover:bg-white/[0.04] transition-colors group cursor-pointer"
                                     >
-                                        <td className="py-5 px-6 font-bold text-slate-300 group-hover:text-emerald-glow transition-colors">{student.rollNo}</td>
-                                        <td className="py-5 px-6 font-bold text-white tracking-wide">
+                                        <td className="py-4 px-6 font-bold text-slate-300 group-hover:text-emerald-glow transition-colors">
+                                            <div className="flex items-center space-x-3">
+                                                <img
+                                                    src={student.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${student.rollNo}`}
+                                                    alt={student.name}
+                                                    className="w-8 h-8 rounded-full border border-white/10 bg-slate-800"
+                                                    onError={e => { e.target.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${student.rollNo}`; }}
+                                                />
+                                                <span>{student.rollNo}</span>
+                                            </div>
+                                        </td>
+                                        <td className="py-4 px-6 font-bold text-white tracking-wide">
                                             {editingRoll === student.rollNo ? (
                                                 <input
                                                     type="text"
                                                     value={editForm.name}
+                                                    onClick={e => e.stopPropagation()}
                                                     onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
                                                     className="bg-slate-800 border border-white/10 rounded p-1 text-white w-full"
                                                 />
-                                            ) : (
-                                                student.name
-                                            )}
+                                            ) : student.name}
                                         </td>
+                                        <td className="py-4 px-6">
+                                            <span className={`text-sm font-bold px-2 py-0.5 rounded-lg ${parseFloat(student.cgpa) >= 9 ? 'bg-emerald-glow/15 text-emerald-glow' : parseFloat(student.cgpa) >= 8 ? 'bg-electric-blue/15 text-electric-blue' : 'bg-luxury-gold/15 text-luxury-gold'}`}>
+                                                {student.cgpa || '—'}
+                                            </span>
+                                        </td>
+                                        <td className="py-4 px-6 text-slate-400 font-medium text-sm">{student.year || '—'}</td>
                                         {isAuthorized && (
-                                            <td className="py-5 px-6 text-right">
+                                            <td className="py-4 px-6 text-right">
                                                 {editingRoll === student.rollNo ? (
-                                                    <button onClick={handleSave} className="text-emerald-glow hover:text-white transition-colors">
-                                                        <Save size={20} />
+                                                    <button onClick={handleSave} className="text-emerald-glow hover:text-white transition-colors p-2">
+                                                        <Save size={18} />
                                                     </button>
                                                 ) : (
-                                                    <button onClick={() => handleEdit(student)} className="text-slate-400 hover:text-electric-blue transition-colors">
-                                                        <Edit2 size={20} />
-                                                    </button>
+                                                    <div className="flex items-center justify-end space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                        <button onClick={e => handleEdit(e, student)} className="text-slate-400 hover:text-electric-blue transition-colors p-2">
+                                                            <Edit2 size={16} />
+                                                        </button>
+                                                        <ChevronRight size={16} className="text-slate-500 group-hover:text-emerald-glow transition-colors" />
+                                                    </div>
                                                 )}
                                             </td>
                                         )}

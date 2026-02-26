@@ -170,18 +170,12 @@ const Coursera = () => {
 
                             {isAuthorized && (
                                 <div className="mt-auto border-t border-white/10 pt-4">
-                                    <p className="text-slate-400 text-sm font-semibold mb-2">Student Submissions ({submissions.length})</p>
-                                    <div className="max-h-32 overflow-y-auto space-y-2 pr-2 custom-scrollbar">
+                                    <p className="text-slate-400 text-sm font-semibold mb-2">Submissions ({submissions.length})</p>
+                                    <div className="max-h-24 overflow-y-auto space-y-2 pr-2 custom-scrollbar">
                                         {submissions.map((sub, idx) => (
-                                            <div key={idx} className="flex items-center justify-between bg-slate-800/50 p-2.5 rounded-lg border border-white/5 hover:border-emerald-500/20 transition-colors">
-                                                <div className="flex items-center space-x-2 min-w-0">
-                                                    <span className="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-[10px] font-black flex-shrink-0">{idx + 1}</span>
-                                                    <div className="min-w-0">
-                                                        <span className="text-xs text-white font-bold block truncate">{sub.studentName}</span>
-                                                        <span className="text-[10px] text-slate-500">{sub.date ? new Date(sub.date).toLocaleDateString('en-IN') : ''}</span>
-                                                    </div>
-                                                </div>
-                                                <span className="px-2 py-0.5 bg-emerald-500/15 text-emerald-400 text-[10px] font-bold rounded border border-emerald-500/20 truncate max-w-[100px] flex-shrink-0">{sub.file}</span>
+                                            <div key={idx} className="flex justify-between items-center bg-slate-800/50 p-2 rounded border border-white/5">
+                                                <span className="text-xs text-white font-medium truncate max-w-[120px]">{sub.studentName}</span>
+                                                <span className="text-[10px] text-electric-blue underline cursor-pointer truncate max-w-[80px]">{sub.file}</span>
                                             </div>
                                         ))}
                                         {submissions.length === 0 && <span className="text-xs text-slate-500">No submissions yet</span>}

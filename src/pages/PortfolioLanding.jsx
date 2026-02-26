@@ -1,13 +1,10 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { ArrowRight, Play, Database, Shield, Zap, Layers, Globe, Building2, Users, GraduationCap, BookOpen } from 'lucide-react';
+import { ArrowRight, Play, Database, Shield, Zap, Layers, Globe } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { AppContext } from '../context/AppContext';
 
 const PortfolioLanding = () => {
     const navigate = useNavigate();
-    const { departments, faculty, students, courses } = useContext(AppContext);
-
     const { scrollY } = useScroll();
     const y1 = useTransform(scrollY, [0, 1000], [0, 200]);
     const y2 = useTransform(scrollY, [0, 1000], [0, -100]);
@@ -17,8 +14,8 @@ const PortfolioLanding = () => {
         <div className="min-h-screen relative overflow-hidden text-slate-300">
 
             {/* Dynamic Backgrounds (Parallax) */}
-            <motion.div style={{ y: y1, willChange: "transform" }} className="absolute -top-40 -left-40 w-[800px] h-[800px] bg-electric-blue/10 rounded-full blur-[150px] mix-blend-screen pointer-events-none transform-gpu" />
-            <motion.div style={{ y: y2, willChange: "transform" }} className="absolute top-[20%] -right-40 w-[600px] h-[600px] bg-royal-purple/10 rounded-full blur-[120px] mix-blend-screen pointer-events-none transform-gpu" />
+            <motion.div style={{ y: y1 }} className="absolute -top-40 -left-40 w-[800px] h-[800px] bg-electric-blue/10 rounded-full blur-[150px] mix-blend-screen pointer-events-none" />
+            <motion.div style={{ y: y2 }} className="absolute top-[20%] -right-40 w-[600px] h-[600px] bg-royal-purple/10 rounded-full blur-[120px] mix-blend-screen pointer-events-none" />
 
             {/* Navigation */}
             <nav className="fixed top-0 w-full z-50 glass-card border-b border-glass-border px-8 py-4 flex items-center justify-between">
@@ -99,8 +96,7 @@ const PortfolioLanding = () => {
                     initial={{ opacity: 0, y: 150, rotateX: 20 }}
                     animate={{ opacity: 1, y: 0, rotateX: 0 }}
                     transition={{ duration: 1.5, delay: 0.2, type: "spring" }}
-                    style={{ willChange: "transform, opacity" }}
-                    className="mt-24 relative w-full max-w-6xl rounded-[2.5rem] p-4 glass-card border border-glass-border shadow-[0_30px_100px_rgba(0,0,0,0.8)] perspective-1000 mx-auto group transform-gpu"
+                    className="mt-24 relative w-full max-w-6xl rounded-[2.5rem] p-4 glass-card border border-glass-border shadow-[0_30px_100px_rgba(0,0,0,0.8)] perspective-1000 mx-auto group"
                 >
                     {/* Animated border line */}
                     <div className="absolute top-0 left-1/4 w-1/2 h-[2px] bg-gradient-to-r from-transparent via-electric-blue to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
@@ -149,32 +145,11 @@ const PortfolioLanding = () => {
                         <h3 className="text-4xl md:text-5xl font-black text-white text-glow mb-6">Designed for scale. <br /> Engineered for speed.</h3>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-16">
-                        {[
-                            { title: "Active Departments", value: departments.length, icon: Building2, color: "electric-blue" },
-                            { title: "Expert Faculty", value: faculty.length, icon: Users, color: "royal-purple" },
-                            { title: "Enrolled Students", value: students.length, icon: GraduationCap, color: "emerald-glow" },
-                            { title: "Dynamic Courses", value: courses.length, icon: BookOpen, color: "luxury-gold" },
-                        ].map((stat, i) => {
-                            const Icon = stat.icon;
-                            return (
-                                <motion.div key={i} initial={{ opacity: 0, scale: 0.8 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: i * 0.1, type: 'spring' }} className="glass-card p-8 rounded-3xl border border-glass-border shadow-glass-card text-center relative group overflow-hidden">
-                                    <div className={`absolute inset-0 bg-gradient-to-t from-${stat.color}/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none`}></div>
-                                    <Icon size={40} className={`mx-auto mb-4 text-${stat.color}`} />
-                                    <motion.h3 initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} className={`text-5xl font-black mb-2 text-${stat.color} text-glow`}>
-                                        {stat.value}
-                                    </motion.h3>
-                                    <p className="text-slate-400 font-bold tracking-widest uppercase text-xs">{stat.title}</p>
-                                </motion.div>
-                            )
-                        })}
-                    </div>
-
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         {[
-                            { title: "Live Data Sync", desc: "This portfolio explicitly connects to the running React context to render real-time user metrics dynamically.", icon: Database, color: "electric-blue" },
+                            { title: "Real-time Sync", desc: "Global state management pushing instant updates across all active department portals.", icon: Zap, color: "electric-blue" },
                             { title: "Military-grade Security", desc: "End-to-end encrypted databases safeguarding sensitive student academic records.", icon: Shield, color: "emerald-glow" },
-                            { title: "Distributed Cloud Server", desc: "Serverless architecture ensuring massive 99.99% uptime during heavy registration periods.", icon: Globe, color: "royal-purple" },
+                            { title: "Distributed Cloud Data", desc: "Serverless architecture ensuring 99.99% uptime during heavy registration periods.", icon: Globe, color: "royal-purple" },
                         ].map((f, i) => (
                             <motion.div
                                 key={i}
@@ -205,9 +180,9 @@ const PortfolioLanding = () => {
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         {[
-                            { name: faculty[0]?.name || "Dr. Administrator", role: `${faculty[0]?.designation || 'Head'} / ${faculty[0]?.department || 'Dept'}`, text: "The new DMS Pro has completely transformed how we handle attendance and faculty management. Truly a masterpiece.", avatar: `https://ui-avatars.com/api/?name=${(faculty[0]?.name || "Dr Administrator").replace(/ /g, '+')}&background=random` },
-                            { name: faculty[1]?.name || "Senior Professor", role: `${faculty[1]?.designation || 'Faculty'}`, text: "Coursera integration and Google forms in one place? It saves me hours every week. The interface is incredibly premium.", avatar: `https://ui-avatars.com/api/?name=${(faculty[1]?.name || "S+P").replace(/ /g, '+')}&background=random` },
-                            { name: students[0]?.name || "Top Student", role: "Student / " + (students[0]?.rollNo || "Council"), text: "Marking attendance with geolocation is so cool! The whole platform feels like something out of a sci-fi movie. I love it.", avatar: `https://ui-avatars.com/api/?name=${(students[0]?.name || "T+S").replace(/ /g, '+')}&background=random` },
+                            { name: "Dr. Sarah Jenkins", role: "Head of IT", text: "The new DMS Pro has completely transformed how we handle attendance and faculty management. Truly a masterpiece.", avatar: "https://i.pravatar.cc/150?u=sarah" },
+                            { name: "Michael Chen", role: "Senior Faculty", text: "Coursera integration and Google forms in one place? It saves me hours every week. The interface is incredibly premium.", avatar: "https://i.pravatar.cc/150?u=michael" },
+                            { name: "Emily Rogers", role: "Student Council", text: "Marking attendance with geolocation is so cool! The whole platform feels like something out of a sci-fi movie. I love it.", avatar: "https://i.pravatar.cc/150?u=emily" }
                         ].map((review, i) => (
                             <motion.div
                                 key={i}
