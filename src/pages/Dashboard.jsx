@@ -85,27 +85,35 @@ const Dashboard = () => {
 
             <div className="w-full">
                 <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="w-full h-96 glass-card rounded-[2rem] border border-glass-border shadow-glass-card p-8 flex flex-col relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-96 h-96 bg-royal-purple/5 blur-[100px] rounded-full pointer-events-none"></div>
+                    <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-glow/5 blur-[100px] rounded-full pointer-events-none"></div>
                     <div className="flex justify-between items-start mb-8 relative z-10">
                         <div>
-                            <h2 className="text-2xl font-bold text-white mb-1">System Analytics</h2>
-                            <p className="text-sm font-medium text-slate-400">Visualization of platform load and monthly active users.</p>
+                            <h2 className="text-2xl font-bold text-white mb-1">Weekly Attendance Overview</h2>
+                            <p className="text-sm font-medium text-slate-400">Visualization of average student attendance percentage across the week.</p>
                         </div>
                         <div className="flex space-x-2">
-                            {['1W', '1M', '3M', '1Y'].map((t) => (
-                                <button key={t} className="px-3 py-1 text-sm rounded-lg hover:bg-white/10 text-slate-400 hover:text-white transition font-medium">
-                                    {t}
-                                </button>
-                            ))}
+                            <span className="px-3 py-1 text-sm rounded-lg bg-emerald-glow/10 border border-emerald-glow/20 text-emerald-glow font-bold">
+                                This Week
+                            </span>
                         </div>
                     </div>
-                    <div className="flex-1 border border-glass-border/50 rounded-xl relative flex items-end justify-between p-4 bg-slate-900/20">
-                        {[40, 60, 45, 80, 50, 90, 75, 100, 60, 85, 70, 95].map((h, i) => (
-                            <motion.div key={i} initial={{ height: 0 }} animate={{ height: `${h}%` }} transition={{ delay: 0.5 + i * 0.05, type: 'spring' }} className="w-10 sm:w-12 rounded-t-lg bg-gradient-to-t from-electric-blue/20 to-electric-blue border-t border-electric-blue/50 relative group">
-                                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-8 bg-black/80 px-2 py-1 rounded text-xs opacity-0 group-hover:opacity-100 transition-opacity border border-white/10 pointer-events-none">
-                                    {h}k
-                                </div>
-                            </motion.div>
+                    <div className="flex-1 border border-glass-border/50 rounded-xl relative flex items-end justify-between p-4 px-8 bg-slate-900/20">
+                        {[
+                            { day: 'Mon', percentage: 92 },
+                            { day: 'Tue', percentage: 88 },
+                            { day: 'Wed', percentage: 95 },
+                            { day: 'Thu', percentage: 85 },
+                            { day: 'Fri', percentage: 90 },
+                            { day: 'Sat', percentage: 76 },
+                        ].map((data, i) => (
+                            <div key={i} className="flex flex-col items-center justify-end h-full flex-1">
+                                <motion.div initial={{ height: 0 }} animate={{ height: `${data.percentage}%` }} transition={{ delay: 0.5 + i * 0.05, type: 'spring' }} className="w-12 sm:w-16 rounded-t-lg bg-gradient-to-t from-emerald-glow/10 to-emerald-glow/80 border-t border-emerald-glow/50 relative group mb-2">
+                                    <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-8 bg-black/80 px-2 py-1 rounded text-xs opacity-0 group-hover:opacity-100 transition-opacity border border-emerald-glow/20 pointer-events-none text-white font-bold whitespace-nowrap">
+                                        {data.percentage}%
+                                    </div>
+                                </motion.div>
+                                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">{data.day}</span>
+                            </div>
                         ))}
                     </div>
                 </motion.div>
