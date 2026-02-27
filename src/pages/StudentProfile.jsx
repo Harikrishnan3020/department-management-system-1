@@ -1,11 +1,23 @@
 import React, { useState, useContext } from 'react';
+import { createPortal } from 'react-dom';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     GraduationCap, ArrowLeft, Mail, Phone, MapPin, Calendar, Droplet,
     Edit2, X, Save, Star, BookOpen, Award, User, CheckCircle, XCircle,
-    Cpu, ChevronRight, Users
+    Cpu, ChevronRight, Users, FileBadge, FileText
 } from 'lucide-react';
+
+const documentItems = [
+    { key: 'doc10th', label: '10th Marksheet' },
+    { key: 'doc12th', label: '12th Marksheet' },
+    { key: 'aadhaar', label: 'Aadhaar Card' },
+    { key: 'pan', label: 'PAN Card' },
+    { key: 'community', label: 'Community Certificate' },
+    { key: 'birth', label: 'Birth Certificate' },
+    { key: 'firstGrad', label: 'First Graduate (Optional)' },
+    { key: 'income', label: 'Income Certificate' }
+];
 import { AppContext } from '../context/AppContext';
 
 const Field = ({ label, value, icon: Icon, color = 'electric-blue' }) => (
@@ -29,6 +41,45 @@ const EditInput = ({ label, value, onChange, type = 'text' }) => (
             onChange={e => onChange(e.target.value)}
             className="w-full bg-slate-800 border border-white/10 p-2.5 rounded-xl text-white text-sm outline-none focus:border-emerald-glow/50 focus:ring-1 focus:ring-emerald-glow transition-all"
         />
+    </div>
+);
+
+const FileInput = ({ label, value, onChange }) => (
+    <div>
+        <label className="text-slate-400 text-xs font-bold mb-1 block">{label}</label>
+        <div className="flex items-center space-x-2">
+            <input
+                type="file"
+                onChange={e => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        onChange(`Uploaded: ${file.name}`);
+                    }
+                }}
+                className="hidden"
+                id={`file-${label.replace(/\s+/g, '-')}`}
+            />
+            <label
+                htmlFor={`file-${label.replace(/\s+/g, '-')}`}
+                className="cursor-pointer px-4 py-2 bg-slate-800 border border-white/10 rounded-xl text-white text-sm hover:bg-slate-700 transition-colors flex flex-1 items-center justify-center font-bold"
+            >
+                {value ? 'Replace File' : 'Choose File'}
+            </label>
+            {value && (
+                <span className="text-xs text-emerald-glow truncate max-w-[150px] font-semibold" title={value}>
+                    {value.replace('Uploaded: ', '')}
+                </span>
+            )}
+            {value && (
+                <button
+                    onClick={() => onChange('')}
+                    className="p-2 text-slate-400 hover:text-rose-500 transition-colors bg-slate-800 rounded-xl border border-white/10"
+                    title="Remove File"
+                >
+                    <X size={16} />
+                </button>
+            )}
+        </div>
     </div>
 );
 
@@ -58,8 +109,8 @@ const StudentProfile = () => {
 
     // Calculate attendance stats
     const studentAttendance = attendance.filter(a => a.studentId === student.rollNo);
-    const totalClasses = studentAttendance.length;
-    const presentCount = studentAttendance.filter(a => a.status === 'Present').length;
+    const totalClasses = (student.manualTotalClasses !== undefined && student.manualTotalClasses !== '') ? Number(student.manualTotalClasses) : studentAttendance.length;
+    const presentCount = (student.manualPresentClasses !== undefined && student.manualPresentClasses !== '') ? Number(student.manualPresentClasses) : studentAttendance.filter(a => a.status === 'Present').length;
     const attendancePct = totalClasses > 0 ? Math.round((presentCount / totalClasses) * 100) : 0;
 
     const handleEdit = () => {
@@ -182,8 +233,13 @@ const StudentProfile = () => {
                             <Field label="Date of Birth" value={student.dob ? new Date(student.dob).toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' }) : '—'} icon={Calendar} color="luxury-gold" />
                             <Field label="Blood Group" value={student.bloodGroup} icon={Droplet} color="rose-400" />
                             <Field label="Address" value={student.address} icon={MapPin} color="emerald-glow" />
-                            <Field label="Parent's Name" value={student.parentName} icon={Users} color="electric-blue" />
-                            <Field label="Parent's Phone" value={student.parentPhone} icon={Phone} color="royal-purple" />
+                            <Field label="Father's Name" value={student.fatherName} icon={Users} color="electric-blue" />
+                            <Field label="Mother's Name" value={student.motherName} icon={Users} color="royal-purple" />
+                            <Field label="Father's Phone" value={student.fatherPhone} icon={Phone} color="electric-blue" />
+                            <Field label="Mother's Phone" value={student.motherPhone} icon={Phone} color="royal-purple" />
+                            <Field label="Father's Occ." value={student.fatherOccupation} icon={Award} color="emerald-glow" />
+                            <Field label="Mother's Occ." value={student.motherOccupation} icon={Award} color="rose-400" />
+                            <Field label="Annual Income" value={student.annualIncome ? `₹${student.annualIncome}` : '—'} icon={Star} color="luxury-gold" />
                         </div>
                     </div>
 
@@ -236,52 +292,105 @@ const StudentProfile = () => {
                             </p>
                         </div>
                     </div>
+
+                    {/* Documents */}
+                    <div className="glass-card rounded-[2rem] border border-glass-border shadow-glass-card p-6">
+                        <h3 className="text-lg font-bold text-white mb-4 flex items-center space-x-2">
+                            <FileBadge size={18} className="text-emerald-glow" /><span>Submitted Documents</span>
+                        </h3>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            {documentItems.map(doc => (
+                                <div key={doc.key} className="flex items-start space-x-3 p-3 rounded-xl bg-slate-900/50 border border-white/5 hover:border-white/10 transition-colors group">
+                                    <div className={`mt-0.5 p-2 rounded-lg bg-electric-blue/10 text-electric-blue border border-electric-blue/20 shrink-0`}>
+                                        <FileText size={14} />
+                                    </div>
+                                    <div className="min-w-0 flex-1">
+                                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{doc.label}</p>
+                                        <p className={`text-sm font-semibold mt-0.5 truncate ${student.documents?.[doc.key] ? 'text-emerald-glow' : 'text-slate-400'}`}>
+                                            {student.documents?.[doc.key] || 'Not Submitted'}
+                                        </p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
                 </motion.div>
             </div>
 
             {/* Edit Modal */}
-            <AnimatePresence>
-                {isEditing && (
-                    <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                            className="bg-slate-900 border border-white/10 p-8 rounded-[2rem] max-w-lg w-full shadow-glass-card relative max-h-[90vh] overflow-y-auto custom-scrollbar"
-                        >
-                            <button onClick={() => setIsEditing(false)} className="absolute top-6 right-6 text-slate-400 hover:text-white p-2 rounded-full hover:bg-white/10 transition-colors">
-                                <X size={22} />
-                            </button>
-                            <h2 className="text-2xl font-black text-white mb-6">Edit Profile</h2>
-                            <div className="space-y-3">
-                                <EditInput label="Full Name" value={editForm.name} onChange={v => setEditForm({ ...editForm, name: v })} />
-                                <EditInput label="Email" value={editForm.email} onChange={v => setEditForm({ ...editForm, email: v })} type="email" />
-                                <EditInput label="Phone" value={editForm.phone} onChange={v => setEditForm({ ...editForm, phone: v })} />
-                                <EditInput label="Parent's Name" value={editForm.parentName} onChange={v => setEditForm({ ...editForm, parentName: v })} />
-                                <EditInput label="Parent's Phone" value={editForm.parentPhone} onChange={v => setEditForm({ ...editForm, parentPhone: v })} />
-                                <EditInput label="Date of Birth" value={editForm.dob} onChange={v => setEditForm({ ...editForm, dob: v })} type="date" />
-                                <EditInput label="Blood Group" value={editForm.bloodGroup} onChange={v => setEditForm({ ...editForm, bloodGroup: v })} />
-                                <EditInput label="Address" value={editForm.address} onChange={v => setEditForm({ ...editForm, address: v })} />
-                                {isAuthorized && (
-                                    <>
-                                        <EditInput label="Year" value={editForm.year} onChange={v => setEditForm({ ...editForm, year: v })} />
-                                        <EditInput label="Section" value={editForm.section} onChange={v => setEditForm({ ...editForm, section: v })} />
-                                        <EditInput label="CGPA" value={editForm.cgpa} onChange={v => setEditForm({ ...editForm, cgpa: v })} />
-                                    </>
-                                )}
-                                <EditInput label="Skills (comma separated)" value={editForm.skills} onChange={v => setEditForm({ ...editForm, skills: v })} />
-                            </div>
-                            <button
-                                onClick={handleSave}
-                                className="mt-6 w-full py-4 bg-gradient-to-r from-emerald-glow to-teal-500 rounded-xl font-black text-white flex items-center justify-center space-x-2 shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:scale-[1.02] transition-transform"
+            {createPortal(
+                <AnimatePresence>
+                    {isEditing && (
+                        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[100] flex items-center justify-center p-4">
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                                className="bg-slate-900 border border-white/10 p-8 rounded-[2rem] max-w-lg w-full shadow-glass-card relative max-h-[90vh] overflow-y-auto custom-scrollbar"
                             >
-                                <Save size={20} />
-                                <span>Save Changes</span>
-                            </button>
-                        </motion.div>
-                    </div>
-                )}
-            </AnimatePresence>
+                                <button onClick={() => setIsEditing(false)} className="absolute top-6 right-6 text-slate-400 hover:text-white p-2 rounded-full hover:bg-white/10 transition-colors">
+                                    <X size={22} />
+                                </button>
+                                <h2 className="text-2xl font-black text-white mb-6">Edit Profile</h2>
+                                <div className="space-y-3">
+                                    <EditInput label="Full Name" value={editForm.name} onChange={v => setEditForm({ ...editForm, name: v })} />
+                                    <EditInput label="Email" value={editForm.email} onChange={v => setEditForm({ ...editForm, email: v })} type="email" />
+                                    <EditInput label="Phone" value={editForm.phone} onChange={v => setEditForm({ ...editForm, phone: v })} />
+                                    <EditInput label="Father's Name" value={editForm.fatherName || ''} onChange={v => setEditForm({ ...editForm, fatherName: v })} />
+                                    <EditInput label="Mother's Name" value={editForm.motherName || ''} onChange={v => setEditForm({ ...editForm, motherName: v })} />
+                                    <EditInput label="Father's Phone" value={editForm.fatherPhone || ''} onChange={v => setEditForm({ ...editForm, fatherPhone: v })} />
+                                    <EditInput label="Mother's Phone" value={editForm.motherPhone || ''} onChange={v => setEditForm({ ...editForm, motherPhone: v })} />
+                                    <EditInput label="Father's Occupation" value={editForm.fatherOccupation || ''} onChange={v => setEditForm({ ...editForm, fatherOccupation: v })} />
+                                    <EditInput label="Mother's Occupation" value={editForm.motherOccupation || ''} onChange={v => setEditForm({ ...editForm, motherOccupation: v })} />
+                                    <EditInput label="Annual Income" value={editForm.annualIncome || ''} type="number" onChange={v => setEditForm({ ...editForm, annualIncome: v })} />
+                                    <EditInput label="Date of Birth" value={editForm.dob} onChange={v => setEditForm({ ...editForm, dob: v })} type="date" />
+                                    <EditInput label="Blood Group" value={editForm.bloodGroup} onChange={v => setEditForm({ ...editForm, bloodGroup: v })} />
+                                    <EditInput label="Address" value={editForm.address} onChange={v => setEditForm({ ...editForm, address: v })} />
+                                    {isAuthorized && (
+                                        <>
+                                            <EditInput label="Year" value={editForm.year} onChange={v => setEditForm({ ...editForm, year: v })} />
+                                            <EditInput label="Section" value={editForm.section} onChange={v => setEditForm({ ...editForm, section: v })} />
+                                            <EditInput label="CGPA" value={editForm.cgpa} onChange={v => setEditForm({ ...editForm, cgpa: v })} />
+                                            <EditInput label="Manual Total Classes" value={editForm.manualTotalClasses || ''} type="number" onChange={v => setEditForm({ ...editForm, manualTotalClasses: v })} />
+                                            <EditInput label="Manual Present Classes" value={editForm.manualPresentClasses || ''} type="number" onChange={v => setEditForm({ ...editForm, manualPresentClasses: v })} />
+                                        </>
+                                    )}
+                                    <EditInput label="Skills (comma separated)" value={editForm.skills} onChange={v => setEditForm({ ...editForm, skills: v })} />
+
+                                    <div className="pt-4 mt-4 border-t border-white/10">
+                                        <h3 className="text-lg font-bold text-white mb-4">Document Uploads</h3>
+                                        {documentItems.map(doc => (
+                                            <div key={doc.key} className="mb-3">
+                                                <FileInput
+                                                    label={doc.label}
+                                                    value={editForm.documents?.[doc.key] || ''}
+                                                    onChange={v => {
+                                                        const updatedDocs = { ...(editForm.documents || {}) };
+                                                        if (!v || v.trim() === '') {
+                                                            delete updatedDocs[doc.key];
+                                                        } else {
+                                                            updatedDocs[doc.key] = v;
+                                                        }
+                                                        setEditForm({ ...editForm, documents: updatedDocs });
+                                                    }}
+                                                />
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={handleSave}
+                                    className="mt-6 w-full py-4 bg-gradient-to-r from-emerald-glow to-teal-500 rounded-xl font-black text-white flex items-center justify-center space-x-2 shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:scale-[1.02] transition-transform"
+                                >
+                                    <Save size={20} />
+                                    <span>Save Changes</span>
+                                </button>
+                            </motion.div>
+                        </div>
+                    )}
+                </AnimatePresence>,
+                document.body
+            )}
             <style>{`
                 .custom-scrollbar::-webkit-scrollbar { width: 6px; }
                 .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }

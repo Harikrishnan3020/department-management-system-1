@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CreditCard, IndianRupee, Send, CheckCircle, Clock, AlertCircle } from 'lucide-react';
+import { CreditCard, IndianRupee, Send, CheckCircle, Clock, AlertCircle, Upload, X } from 'lucide-react';
 import { AppContext } from '../context/AppContext';
 
 const Fees = () => {
@@ -51,25 +51,40 @@ const Fees = () => {
         alert('Fee assigned successfully and student notified!');
     };
 
-    const handlePayment = (feeId) => {
+    const [payingFeeId, setPayingFeeId] = useState(null);
+    const [paymentProofFile, setPaymentProofFile] = useState(null);
+
+    const initiatePayment = (feeId) => {
+        setPayingFeeId(feeId);
+        setPaymentProofFile(null);
+    };
+
+    const handleUploadSubmit = (e) => {
+        e.preventDefault();
+        if (!paymentProofFile || !payingFeeId) return;
+
+        const paidFee = fees.find(f => f.id === payingFeeId);
+
         setFees(prev => prev.map(f => {
-            if (f.id === feeId) {
-                return { ...f, status: 'Paid', paidAt: new Date().toISOString() };
+            if (f.id === payingFeeId) {
+                return { ...f, status: 'Paid', paidAt: new Date().toISOString(), proofFile: paymentProofFile.name };
             }
             return f;
         }));
 
-        const paidFee = fees.find(f => f.id === feeId);
+        // Delete the original assignment notification for this student automatically
+        setNotifications(prev => prev.filter(n => !(n.type === 'Fee Assigned' && n.message.includes(paidFee.description))));
 
         // Notify Admins/Faculty
         setNotifications(prev => [{
             id: Date.now(),
             type: 'Fee Payment',
-            message: `${currentUser.name} (${currentUser.id}) has paid ₹${paidFee.amount} for ${paidFee.description}.`,
+            message: `${currentUser.name} (${currentUser.id}) has paid ₹${paidFee.amount} for ${paidFee.description} and uploaded proof.`,
             from: currentUser.id
         }, ...prev]);
 
-        alert('Payment simulated successfully! Notification sent to Admin/Faculty.');
+        alert('Payment proof uploaded successfully! Notification sent to Admin/Faculty.');
+        setPayingFeeId(null);
     };
 
     const containerVariants = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.1 } } };
@@ -158,7 +173,7 @@ const Fees = () => {
                                 </div>
                             ) : (
                                 !isAuthorized ? (
-                                    <button onClick={() => handlePayment(fee.id)} className="w-full bg-gradient-to-r from-electric-blue to-emerald-glow px-6 py-2 rounded-xl font-bold text-slate-900 border border-transparent shadow-[0_0_15px_rgba(16,185,129,0.3)] hover:scale-105 transition-transform">
+                                    <button onClick={() => initiatePayment(fee.id)} className="w-full bg-gradient-to-r from-electric-blue to-emerald-glow px-6 py-2 rounded-xl font-bold text-slate-900 border border-transparent shadow-[0_0_15px_rgba(16,185,129,0.3)] hover:scale-105 transition-transform">
                                         Pay Now
                                     </button>
                                 ) : (
@@ -178,6 +193,59 @@ const Fees = () => {
                     </div>
                 )}
             </motion.div>
+
+            {/* Payment Proof Upload Modal */}
+            <AnimatePresence>
+                {payingFeeId && (
+                    <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                            className="bg-slate-900 border border-white/10 p-8 rounded-[2rem] max-w-md w-full shadow-glass-card relative"
+                        >
+                            <button onClick={() => setPayingFeeId(null)} className="absolute top-6 right-6 text-slate-400 hover:text-white p-2 rounded-full hover:bg-white/10 transition-colors">
+                                <X size={22} />
+                            </button>
+                            <h2 className="text-2xl font-black text-white mb-2 flex items-center">
+                                <IndianRupee size={24} className="mr-2 text-emerald-glow" /> Complete Payment
+                            </h2>
+                            {(() => {
+                                const feeDetails = fees.find(f => f.id === payingFeeId);
+                                return (
+                                    <>
+                                        <div className="bg-emerald-glow/10 p-4 rounded-xl border border-emerald-glow/20 mb-6 mt-4">
+                                            <p className="text-slate-300 text-sm mb-2 text-center">Please transfer exactly:</p>
+                                            <p className="text-4xl font-black text-emerald-glow text-center mb-2">₹{feeDetails?.amount}</p>
+                                            <p className="text-sm font-semibold text-white mt-4 text-center">Transfer via GPay / UPI using</p>
+                                            <p className="text-xl font-bold text-electric-blue text-center mb-1 bg-slate-950/50 py-2 rounded-lg mt-2 font-mono tracking-widest border border-white/5">7867011399</p>
+                                        </div>
+
+                                        <form onSubmit={handleUploadSubmit} className="space-y-4">
+                                            <div>
+                                                <label className="text-slate-400 font-bold text-sm block mb-2">Upload Payment Proof (Screenshot)</label>
+                                                <input
+                                                    type="file"
+                                                    required
+                                                    accept="image/*,.pdf"
+                                                    onChange={e => setPaymentProofFile(e.target.files[0])}
+                                                    className="w-full text-sm text-slate-300 file:mr-4 file:py-3 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-electric-blue/20 file:text-electric-blue hover:file:bg-electric-blue/30 bg-slate-800 rounded-xl border border-white/10"
+                                                />
+                                            </div>
+                                            <div className="pt-4 border-t border-white/10 mt-6">
+                                                <button type="submit" className="w-full bg-emerald-glow text-slate-900 px-6 py-4 rounded-xl font-black hover:shadow-[0_0_20px_rgba(16,185,129,0.4)] transition-shadow flex items-center justify-center space-x-2">
+                                                    <Upload size={20} />
+                                                    <span>Submit Proof</span>
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </>
+                                );
+                            })()}
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };

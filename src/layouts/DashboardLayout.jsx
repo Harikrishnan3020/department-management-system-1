@@ -3,6 +3,7 @@ import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LayoutDashboard, Building2, Users, GraduationCap, BookOpen, LogOut, Menu, X, Bell, Search, FileText, CalendarCheck, FileBadge, Link as LinkIcon, MonitorPlay, CreditCard, CalendarDays, CalendarRange, UserCircle2 } from 'lucide-react';
 import { AppContext } from '../context/AppContext';
+import { studentPhotoMap } from '../utils/studentPhotos';
 
 const DashboardLayout = () => {
     const [isSidebarOpen, setSidebarOpen] = useState(true);
@@ -79,6 +80,14 @@ const DashboardLayout = () => {
                     {navItems.map((item) => {
                         const Icon = item.icon;
                         const isActive = location.pathname === item.path;
+
+                        let hasNotification = false;
+                        if (currentUser.role === 'Student') {
+                            if (item.path === '/google-form') hasNotification = notifications.some(n => n.type === 'Google Form');
+                            else if (item.path === '/coursera') hasNotification = notifications.some(n => n.type === 'Coursera Assignment');
+                            else if (item.path === '/fees') hasNotification = notifications.some(n => n.type === 'Fee Assigned');
+                        }
+
                         return (
                             <NavLink key={item.path} to={item.path}>
                                 <motion.div
@@ -95,16 +104,24 @@ const DashboardLayout = () => {
                                             transition={{ type: "spring", stiffness: 300, damping: 30 }}
                                         />
                                     )}
-                                    <Icon size={22} className={isActive ? 'text-electric-blue' : ''} />
+                                    <div className="relative">
+                                        <Icon size={22} className={isActive ? 'text-electric-blue' : ''} />
+                                        {hasNotification && !isSidebarOpen && (
+                                            <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-slate-900 shadow-[0_0_8px_rgba(244,63,94,0.8)]"></div>
+                                        )}
+                                    </div>
                                     <AnimatePresence>
                                         {isSidebarOpen && (
                                             <motion.span
                                                 initial={{ opacity: 0, width: 0 }}
                                                 animate={{ opacity: 1, width: "auto" }}
                                                 exit={{ opacity: 0, width: 0 }}
-                                                className="ml-4 font-medium whitespace-nowrap"
+                                                className="ml-4 font-medium whitespace-nowrap flex-1 flex items-center justify-between"
                                             >
-                                                {item.label}
+                                                <span>{item.label}</span>
+                                                {hasNotification && (
+                                                    <span className="w-2 h-2 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.8)]"></span>
+                                                )}
                                             </motion.span>
                                         )}
                                     </AnimatePresence>
@@ -174,9 +191,21 @@ const DashboardLayout = () => {
                                 <p className="text-sm font-semibold text-white group-hover:text-electric-blue transition-colors">{currentUser.name}</p>
                                 <p className="text-xs text-slate-400 capitalize">{currentUser.role === 'Student' ? `Roll No: ${currentUser.id}` : currentUser.role}</p>
                             </div>
-                            <div className="w-10 h-10 rounded-full border-2 border-electric-blue/50 overflow-hidden shadow-glow-blue cursor-pointer bg-slate-800 relative z-10">
-                                <img src={`/photos/${currentUser.id}.jpg`} alt={currentUser.name} onError={(e) => { e.target.style.display = 'none'; e.target.nextElementSibling.style.display = 'flex'; }} className="w-full h-full object-cover" />
-                                <div className="absolute inset-0 hidden items-center justify-center text-white font-bold">{currentUser.name.charAt(0)}</div>
+                            <div className="w-10 h-10 rounded-full border-2 border-electric-blue/50 overflow-hidden shadow-glow-blue cursor-pointer bg-slate-800 relative z-10 flex items-center justify-center">
+                                {(() => {
+                                    let avatarUrl = '';
+                                    if (currentUser.role === 'Student') {
+                                        avatarUrl = studentPhotoMap[currentUser.id] || `https://api.dicebear.com/7.x/avataaars/svg?seed=${currentUser.id}`;
+                                    } else {
+                                        avatarUrl = `https://api.dicebear.com/7.x/avataaars/svg?seed=${currentUser.id}`;
+                                    }
+                                    return (
+                                        <>
+                                            <img src={avatarUrl} alt={currentUser.name} onError={(e) => { e.target.style.display = 'none'; e.target.nextElementSibling.style.display = 'flex'; }} className="w-full h-full object-cover" />
+                                            <div className="absolute inset-0 hidden items-center justify-center text-white font-bold">{currentUser.name.charAt(0)}</div>
+                                        </>
+                                    );
+                                })()}
                             </div>
                         </div>
                     </div>

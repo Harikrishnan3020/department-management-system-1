@@ -4,6 +4,14 @@ export default {
         "./index.html",
         "./src/**/*.{js,ts,jsx,tsx}",
     ],
+    safelist: [
+        'bg-electric-blue/20', 'bg-royal-purple/20', 'bg-emerald-glow/10',
+        'bg-rose-500/20', 'bg-fuchsia-600/20', 'bg-cyan-400/10',
+        'bg-emerald-glow/20', 'bg-teal-500/20', 'bg-lime-400/10',
+        'bg-luxury-gold/20', 'bg-orange-500/20', 'bg-rose-500/10',
+        'bg-cyan-500/20', 'bg-blue-600/20', 'bg-indigo-500/10',
+        'bg-red-600/20', 'bg-orange-600/10'
+    ],
     theme: {
         extend: {
             colors: {

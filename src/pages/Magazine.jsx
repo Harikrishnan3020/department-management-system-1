@@ -12,7 +12,12 @@ const Magazine = () => {
     const [file, setFile] = useState(null);
     const [templateFile, setTemplateFile] = useState(null);
     const [templateLink, setTemplateLink] = useState('');
-    const [description, setDescription] = useState('');
+    const [templateType, setTemplateType] = useState('template1');
+    const [topic, setTopic] = useState('');
+    const [collegeName, setCollegeName] = useState('');
+    const [department, setDepartment] = useState('');
+    const [city, setCity] = useState('');
+    const [date, setDate] = useState('');
 
     // Edit State
     const [editingId, setEditingId] = useState(null);
@@ -20,19 +25,34 @@ const Magazine = () => {
 
     const handleGenerate = (e) => {
         e.preventDefault();
-        if (!description) return;
+        if (!topic || !collegeName || !department || !city || !date) return;
 
-        // Auto-generate magazine content from description (mock)
-        const generatedTitle = "Event Highlights: " + description.split(' ').slice(0, 3).join(' ') + "...";
-        const generatedContent = `[Generated Magazine Article]\n\nRecently, we celebrated a remarkable event showcasing outstanding student achievements. ${description} This milestone highlights our department's commitment to excellence and continuous growth.`;
+        // Extract a headline from the topic
+        const generatedTitle = topic.split(' ').slice(0, 8).join(' ');
+
+        const generatedContent = `${generatedTitle}
+
+By Student Editor, B.Tech
+${city}, ${new Date(date).toLocaleDateString()}:
+
+The recent focus on ${topic} has brought widespread attention across the ${department} this week. Hosted at the main campus venues of ${collegeName}, this initiative engaged key faculty and enthusiastic students aiming to bridge the gap between theory and practical application. Understanding this subject is crucial now due to the rapid shifts in modern technology and industry demands, making this gathering both timely and highly relevant.
+
+Throughout the central proceedings, participants were introduced to detailed frameworks and immersive scenarios that challenged their existing skill sets. The comprehensive explanation provided by the experts broke down complex topics into digestible components, allowing students to systematically build their proficiency. This rigorous approach ensured that everyone could actively participate and gain substantial knowledge.
+
+A major highlight of the event was the interactive showcase where several standout projects were unveiled. "Seeing such innovative solutions developed in such a short timeframe is nothing short of spectacular," noted one of the judging panel members. These highlights reinforced the positive atmosphere, encouraging participants to step forward and present their ideas gracefully.
+
+The immediate impact of these sessions is evident as students begin integrating these new methodologies into their academic coursework. The primary outcome has been a noticeable increase in collaborative projects and a renewed vigor for research-based learning. Furthermore, several of the prototypes developed during this period are already being refined further.
+
+In conclusion, the success of this initiative has set an inspiring precedent for our college's academic calendar. Future plans involve expanding this single event into a broader festival of innovation, incorporating more diverse fields of study. Our commitment to empowering students through practical experiences continues to be a driving force.`;
 
         const newEntry = {
             id: Date.now(),
             title: generatedTitle,
             content: generatedContent,
-            image: file ? URL.createObjectURL(file) : 'https://picsum.photos/600/400',
+            image: file ? URL.createObjectURL(file) : 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&q=80',
             templateLink: templateLink || null,
             templateFile: templateFile ? templateFile.name : null,
+            templateType: templateType,
             date: new Date().toLocaleDateString(),
             author: currentUser.name
         };
@@ -41,7 +61,11 @@ const Magazine = () => {
         setFile(null);
         setTemplateFile(null);
         setTemplateLink('');
-        setDescription('');
+        setTopic('');
+        setCollegeName('');
+        setDepartment('');
+        setCity('');
+        setDate('');
     };
 
     const handleEditSave = (id) => {
@@ -103,6 +127,20 @@ const Magazine = () => {
 
                         <div className="space-y-2">
                             <label className="text-slate-300 font-semibold flex items-center space-x-2">
+                                <FileBadge size={18} /> <span>Template Style</span>
+                            </label>
+                            <select
+                                value={templateType}
+                                onChange={e => setTemplateType(e.target.value)}
+                                className="w-full bg-slate-900 border border-white/10 rounded-xl p-3 text-white focus:ring-1 focus:ring-luxury-gold outline-none"
+                            >
+                                <option value="template1">Layout 1 (Short & Sweet - Split)</option>
+                                <option value="template2">Layout 2 (Professional - Full Width)</option>
+                            </select>
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-slate-300 font-semibold flex items-center space-x-2">
                                 <LinkIcon size={18} /> <span>Template Link (Optional)</span>
                             </label>
                             <input
@@ -126,18 +164,32 @@ const Magazine = () => {
                             />
                         </div>
 
-                        <div className="space-y-2">
-                            <label className="text-slate-300 font-semibold flex items-center space-x-2">
-                                <Edit3 size={18} /> <span>Event Description</span>
-                            </label>
-                            <textarea
-                                required
-                                rows={4}
-                                placeholder="Describe the student achievement, hackathon win, or event..."
-                                className="w-full bg-slate-900 border border-white/10 rounded-xl p-3 text-white placeholder-slate-500 font-medium focus:ring-1 focus:ring-luxury-gold/50 focus:border-luxury-gold/50 transition-all outline-none"
-                                value={description}
-                                onChange={e => setDescription(e.target.value)}
-                            />
+                        <div className="space-y-4 pt-4 border-t border-white/10">
+                            <h3 className="text-luxury-gold font-bold text-sm tracking-wide uppercase">Article Information</h3>
+                            <div className="space-y-2">
+                                <label className="text-slate-300 font-semibold text-xs flex items-center mb-1">Topic</label>
+                                <input required type="text" placeholder="Enter your topic here" className="w-full bg-slate-900 border border-white/10 rounded-xl p-3 text-white placeholder-slate-500 font-medium focus:ring-1 focus:ring-luxury-gold outline-none" value={topic} onChange={e => setTopic(e.target.value)} />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <label className="text-slate-300 font-semibold text-xs flex items-center mb-1">College Name</label>
+                                    <input required type="text" placeholder="Enter college name" className="w-full bg-slate-900 border border-white/10 rounded-xl p-3 text-white placeholder-slate-500 font-medium focus:ring-1 focus:ring-luxury-gold outline-none" value={collegeName} onChange={e => setCollegeName(e.target.value)} />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-slate-300 font-semibold text-xs flex items-center mb-1">Department</label>
+                                    <input required type="text" placeholder="Enter department name" className="w-full bg-slate-900 border border-white/10 rounded-xl p-3 text-white placeholder-slate-500 font-medium focus:ring-1 focus:ring-luxury-gold outline-none" value={department} onChange={e => setDepartment(e.target.value)} />
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <label className="text-slate-300 font-semibold text-xs flex items-center mb-1">City</label>
+                                    <input required type="text" placeholder="Enter city" className="w-full bg-slate-900 border border-white/10 rounded-xl p-3 text-white placeholder-slate-500 font-medium focus:ring-1 focus:ring-luxury-gold outline-none" value={city} onChange={e => setCity(e.target.value)} />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-slate-300 font-semibold text-xs flex items-center mb-1">Date</label>
+                                    <input required type="date" className="w-full bg-slate-900 border border-white/10 rounded-xl p-3 text-slate-400 font-medium focus:ring-1 focus:ring-luxury-gold outline-none" value={date} onChange={e => setDate(e.target.value)} />
+                                </div>
+                            </div>
                         </div>
 
                         <button type="submit" className="w-full py-4 bg-gradient-to-r from-luxury-gold to-yellow-500 rounded-xl font-black text-slate-900 flex items-center justify-center space-x-2 shadow-glow-gold hover:scale-[1.02] transition-transform">
@@ -162,15 +214,22 @@ const Magazine = () => {
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0, scale: 0.95 }}
-                                    className="glass-card p-6 rounded-[2rem] border border-glass-border shadow-glass-card group flex flex-col sm:flex-row gap-6 relative"
+                                    className={`glass-card p-6 rounded-[2rem] border border-glass-border shadow-glass-card group flex ${article.templateType === 'template2' ? 'flex-col' : 'flex-col md:flex-row'} gap-8 relative`}
                                 >
-                                    <div className="w-full sm:w-1/3 aspect-video sm:aspect-square bg-slate-900 rounded-xl overflow-hidden border border-white/10 relative">
-                                        <img src={article.image} alt={article.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                                    <div className={`w-full ${article.templateType === 'template2' ? 'h-80' : 'sm:w-2/5 aspect-[4/3]'} bg-slate-900 rounded-xl overflow-hidden border border-white/10 relative shrink-0`}>
+                                        <img src={article.image} alt={article.title} className="w-full h-full object-contain bg-black/40 group-hover:scale-105 transition-transform duration-700" />
+                                        {article.templateType === 'template2' && (
+                                            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-900 via-slate-900/80 to-transparent p-6 pt-12">
+                                                <h3 className="text-3xl md:text-5xl font-black text-white leading-tight font-serif drop-shadow-lg">{article.title}</h3>
+                                            </div>
+                                        )}
                                     </div>
-                                    <div className="flex-1 flex flex-col">
-                                        <div className="flex justify-between items-start mb-2 pr-8">
-                                            <h3 className="text-xl font-black text-white">{article.title}</h3>
-                                            <div className="flex space-x-2 absolute top-6 right-6">
+                                    <div className="flex-1 flex flex-col w-full">
+                                        <div className="flex justify-between items-start mb-2 pr-8 relative">
+                                            {article.templateType !== 'template2' && (
+                                                <h3 className="text-2xl md:text-4xl font-black text-white leading-tight font-serif mb-2">{article.title}</h3>
+                                            )}
+                                            <div className="flex space-x-2 absolute top-0 right-0">
                                                 <button onClick={() => downloadArticle(article)} className="text-luxury-gold hover:text-white transition-colors bg-luxury-gold/10 p-2 rounded-lg" title="Download Article">
                                                     <Download size={18} />
                                                 </button>
@@ -188,23 +247,27 @@ const Magazine = () => {
                                                 </button>
                                             </div>
                                         </div>
-                                        <div className="text-xs text-slate-500 font-bold tracking-wider uppercase mb-4">
+                                        <div className="text-xs text-luxury-gold font-bold tracking-wider uppercase mb-6 pb-2 border-b border-white/10">
                                             {article.date} &bull; Admin / Faculty &bull; Published
                                         </div>
 
                                         {editingId === article.id ? (
                                             <textarea
-                                                className="w-full flex-1 bg-slate-900 border border-electric-blue/50 rounded-xl p-3 text-slate-300 font-medium leading-relaxed focus:outline-none focus:shadow-glow-blue transition-shadow mt-2"
+                                                className="w-full flex-1 bg-slate-900 border border-electric-blue/50 rounded-xl p-3 text-slate-300 font-serif leading-relaxed focus:outline-none focus:shadow-glow-blue transition-shadow mt-2"
                                                 value={editContent}
                                                 onChange={(e) => setEditContent(e.target.value)}
-                                                rows={5}
+                                                rows={15}
+                                                style={{ fontFamily: '"Times New Roman", Times, serif', fontSize: '16px', lineHeight: '1.5' }}
                                             />
                                         ) : (
                                             <div className="flex-1 flex flex-col">
-                                                <p className="text-slate-400 font-medium leading-relaxed whitespace-pre-wrap flex-1">
+                                                <p
+                                                    className="text-slate-200 leading-relaxed whitespace-pre-wrap flex-1"
+                                                    style={{ fontFamily: '"Times New Roman", Times, serif', fontSize: '16px', lineHeight: '1.5' }}
+                                                >
                                                     {article.content}
                                                 </p>
-                                                <div className="mt-4 flex flex-wrap gap-2">
+                                                <div className="mt-6 flex flex-wrap gap-2 pt-4 border-t border-white/10">
                                                     {article.templateLink && (
                                                         <a href={article.templateLink} target="_blank" rel="noopener noreferrer" className="px-3 py-1 bg-royal-purple/20 text-royal-purple rounded font-bold text-xs flex items-center space-x-1 hover:bg-royal-purple/30">
                                                             <LinkIcon size={12} /> <span>External Template Link</span>

@@ -30,19 +30,57 @@ const Attendance = () => {
         if ('geolocation' in navigator) {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
+                    const { latitude, longitude } = position.coords;
+
+                    // KGISL Campus Coordinates (Approximate)
+                    const kgislLat = 11.0828;
+                    const kgislLon = 76.9963;
+
+                    // Haversine formula to calculate distance in meters
+                    const R = 6371e3; // Earth's radius in meters
+                    const toRad = (value) => (value * Math.PI) / 180;
+
+                    const phi1 = toRad(kgislLat);
+                    const phi2 = toRad(latitude);
+                    const deltaPhi = toRad(latitude - kgislLat);
+                    const deltaLambda = toRad(longitude - kgislLon);
+
+                    const a = Math.sin(deltaPhi / 2) * Math.sin(deltaPhi / 2) +
+                        Math.cos(phi1) * Math.cos(phi2) *
+                        Math.sin(deltaLambda / 2) * Math.sin(deltaLambda / 2);
+                    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                    const distance = R * c;
+
                     setTimeout(() => {
                         setIsLocating(false);
-                        // Mocking KGiSL location check
-                        // For demo purposes, any location is accepted as "inside college" since real coords differ.
-                        // We will simulate success
-                        setLocationVerified(true);
-                        alert("Location Verified: You are inside the college!");
-                    }, 1000);
+                        if (distance <= 200) {
+                            setLocationVerified(true);
+                            alert("Location Verified: You are inside the campus!");
+                        } else {
+                            setLocationVerified(false);
+                            // API Key provided by user: 661ddd32693444918bb2f7b436ef9970 (Not strictly needed for local Haversine distance calculation)
+                            alert(`You are not inside the campus. You are ${Math.round(distance)} meters away.`);
+                        }
+                    }, 500);
                 },
                 (error) => {
                     setIsLocating(false);
-                    alert("Please enable location services to mark attendance.");
-                }
+                    switch (error.code) {
+                        case error.PERMISSION_DENIED:
+                            alert("Please enable location services to mark attendance.");
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            alert("Location information is unavailable. Please try again.");
+                            break;
+                        case error.TIMEOUT:
+                            alert("The request to get user location timed out. Please try again.");
+                            break;
+                        default:
+                            alert("An unknown error occurred while checking location.");
+                            break;
+                    }
+                },
+                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
             );
         } else {
             setIsLocating(false);

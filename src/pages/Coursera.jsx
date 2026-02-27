@@ -60,6 +60,9 @@ const Coursera = () => {
             return c;
         }));
 
+        // Delete the original assignment notification for this student automatically
+        setNotifications(prev => prev.filter(n => !(n.type === 'Coursera Assignment' && n.message.includes(courseSubject))));
+
         const notif = {
             id: Date.now(),
             type: 'Coursera Submission',

@@ -118,7 +118,7 @@ const Faculty = () => {
                                 </div>
                             </div>
 
-                            {isAuthorized && (
+                            {currentUser?.role === 'Admin' && (
                                 <div className="absolute bottom-4 right-4 translate-y-12 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 z-10">
                                     <button
                                         onClick={e => handleDelete(e, member.id)}

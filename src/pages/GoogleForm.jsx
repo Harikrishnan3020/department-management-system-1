@@ -106,7 +106,7 @@ const GoogleForm = () => {
                             <p className="text-slate-400 text-sm flex items-center space-x-2"><User size={14} /><span>Sent by: {form.createdBy}</span></p>
                             {form.deadline && <p className="text-rose-400 text-sm flex items-center space-x-2"><Clock size={14} /><span>Due: {form.deadline}</span></p>}
                         </div>
-                        <a href={form.link} target="_blank" rel="noopener noreferrer" className="w-full py-3 bg-white/5 border border-white/10 rounded-xl font-bold flex items-center justify-center space-x-2 hover:bg-royal-purple/20 hover:border-royal-purple/50 transition-colors text-white mt-auto">
+                        <a href={form.link} target="_blank" rel="noopener noreferrer" onClick={() => setNotifications(prev => prev.filter(n => !(n.type === 'Google Form' && n.message.includes(form.title))))} className="w-full py-3 bg-white/5 border border-white/10 rounded-xl font-bold flex items-center justify-center space-x-2 hover:bg-royal-purple/20 hover:border-royal-purple/50 transition-colors text-white mt-auto">
                             <Eye size={18} />
                             <span>Fill Google Form</span>
                         </a>

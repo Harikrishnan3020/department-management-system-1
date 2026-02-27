@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { BookOpen, Clock, Code, Database, BrainCircuit, ShieldAlert, Cpu, Network, Plus, Edit3, X, Save, UploadCloud, Trash2 } from 'lucide-react';
+import { BookOpen, Clock, Code, Database, BrainCircuit, ShieldAlert, Cpu, Network, Plus, Edit3, X, Save, UploadCloud, Trash2, Send, FileText } from 'lucide-react';
 import { AppContext } from '../context/AppContext';
 
 const getIcon = (code) => {
@@ -18,12 +18,16 @@ const getColor = (index) => {
 };
 
 const Courses = () => {
-    const { courses, setCourses, faculty, currentUser } = useContext(AppContext);
+    const { courses, setCourses, faculty, currentUser, setNotifications } = useContext(AppContext);
     const isAuthorized = currentUser?.role === 'Admin' || currentUser?.role === 'Faculty';
 
     const [selectedCourse, setSelectedCourse] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
     const [editForm, setEditForm] = useState(null);
+
+    const [qbTitle, setQbTitle] = useState('');
+    const [qbFile, setQbFile] = useState(null);
+    const [showQbForm, setShowQbForm] = useState(false);
 
     const handleCourseClick = (course) => {
         setSelectedCourse(course);
@@ -149,9 +153,11 @@ const Courses = () => {
                                             <button onClick={(e) => handleEditClick(e, course)} className="p-2 bg-slate-800 text-slate-400 hover:text-luxury-gold rounded-lg shadow-sm z-20 hover:scale-110 transition-transform">
                                                 <Edit3 size={18} />
                                             </button>
-                                            <button onClick={(e) => handleDelete(e, course.id)} className="p-2 bg-slate-800 text-slate-400 hover:text-rose-500 rounded-lg shadow-sm z-20 hover:scale-110 transition-transform">
-                                                <Trash2 size={18} />
-                                            </button>
+                                            {currentUser?.role === 'Admin' && (
+                                                <button onClick={(e) => handleDelete(e, course.id)} className="p-2 bg-slate-800 text-slate-400 hover:text-rose-500 rounded-lg shadow-sm z-20 hover:scale-110 transition-transform">
+                                                    <Trash2 size={18} />
+                                                </button>
+                                            )}
                                         </div>
                                     )}
                                 </div>
@@ -250,10 +256,55 @@ const Courses = () => {
                                     </div>
 
                                     {isAuthorized && (
-                                        <div className="mt-8 text-right">
-                                            <button onClick={() => { setEditForm(selectedCourse); setIsEditing(true); }} className="px-6 py-3 bg-white/10 border border-white/20 rounded-xl text-white font-bold hover:bg-white/20 transition-colors flex items-center space-x-2 ml-auto">
-                                                <Edit3 size={18} /><span>Edit details</span>
-                                            </button>
+                                        <div className="mt-8 pt-6 border-t border-white/10 space-y-4">
+                                            {!showQbForm ? (
+                                                <div className="flex items-center justify-between">
+                                                    <h3 className="text-xl font-bold text-white flex items-center space-x-2"><FileText size={20} className="text-luxury-gold" /><span>Question Banks</span></h3>
+                                                    <button onClick={() => setShowQbForm(true)} className="px-5 py-2.5 bg-gradient-to-r from-electric-blue to-emerald-glow rounded-xl text-slate-900 font-bold hover:scale-105 shadow-[0_0_15px_rgba(16,185,129,0.3)] transition-transform flex items-center space-x-2">
+                                                        <UploadCloud size={18} /><span>Upload New</span>
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <div className="bg-slate-800/80 p-6 rounded-2xl border border-white/10 relative shadow-inner">
+                                                    <button onClick={() => setShowQbForm(false)} className="absolute top-4 right-4 text-slate-400 hover:text-white p-1 rounded-full hover:bg-white/10 transition-colors"><X size={18} /></button>
+                                                    <h3 className="text-lg font-bold text-white mb-4 flex items-center"><Send size={18} className="mr-2 text-electric-blue" />Publish Question Bank</h3>
+                                                    <form onSubmit={(e) => {
+                                                        e.preventDefault();
+                                                        if (!qbTitle || !qbFile) return;
+
+                                                        setNotifications(prev => [{
+                                                            id: Date.now(),
+                                                            type: 'Question Bank',
+                                                            message: `A new Question Bank '${qbTitle}' has been uploaded for ${selectedCourse.name} by ${currentUser.name}.`
+                                                        }, ...prev]);
+
+                                                        alert('Question Bank uploaded & students notified successfully!');
+                                                        setQbTitle('');
+                                                        setQbFile(null);
+                                                        setShowQbForm(false);
+                                                    }} className="space-y-4">
+                                                        <div>
+                                                            <label className="text-slate-400 font-bold text-xs block mb-1">Title</label>
+                                                            <input type="text" required placeholder="e.g. Mid-Term Important Questions" value={qbTitle} onChange={e => setQbTitle(e.target.value)} className="w-full bg-slate-900/50 border border-white/10 p-3 rounded-xl text-white text-sm focus:border-electric-blue/50 outline-none transition-colors" />
+                                                        </div>
+                                                        <div>
+                                                            <label className="text-slate-400 font-bold text-xs block mb-1">Attachment File (.pdf, .doc)</label>
+                                                            <input type="file" required accept=".pdf,.doc,.docx" onChange={e => setQbFile(e.target.files[0])} className="w-full text-sm text-slate-300 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-black file:bg-electric-blue/20 file:text-electric-blue hover:file:bg-electric-blue/30 bg-slate-900/50 rounded-xl border border-white/10 cursor-pointer" />
+                                                        </div>
+                                                        <div className="pt-2 flex justify-end">
+                                                            <button type="submit" className="px-6 py-2.5 bg-electric-blue rounded-xl text-slate-900 font-bold hover:shadow-glow-blue flex items-center space-x-2 transition-shadow">
+                                                                <UploadCloud size={18} /><span>Upload & Notify Students</span>
+                                                            </button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            )}
+
+                                            <div className="mt-8 text-right flex justify-end pt-4">
+                                                <button onClick={() => { setEditForm(selectedCourse); setIsEditing(true); }} className="px-5 py-2.5 bg-white/5 border border-white/20 rounded-xl text-white font-bold hover:bg-white/10 transition-colors flex items-center space-x-2">
+                                                    <Edit3 size={18} /><span>Edit Course Details</span>
+                                                </button>
+                                            </div>
                                         </div>
                                     )}
                                 </div>

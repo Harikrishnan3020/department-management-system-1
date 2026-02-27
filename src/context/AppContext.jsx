@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
+import { studentPhotoMap } from '../utils/studentPhotos';
 
 export const AppContext = createContext();
 
@@ -24,7 +25,7 @@ export const AppProvider = ({ children }) => {
 
     const makeStudent = (rollNo, name, seed, dob, blood, skills, cgpa, phone, address) => ({
         rollNo, name,
-        email: `${rollNo.toLowerCase()}@students.dms.edu`,
+        email: '',
         phone: phone || '+91 98765 43210',
         dob: dob || '2005-06-15',
         address: address || 'Chennai, Tamil Nadu',
@@ -33,7 +34,7 @@ export const AppProvider = ({ children }) => {
         section: 'A',
         cgpa: cgpa || (7.5 + Math.random()).toFixed(2),
         skills: skills || ['Python', 'Java', 'Data Structures'],
-        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${seed || rollNo}`,
+        avatar: studentPhotoMap[rollNo] || `https://api.dicebear.com/7.x/avataaars/svg?seed=${seed || rollNo}`,
     });
 
     const defaultStudents = [
@@ -107,8 +108,16 @@ export const AppProvider = ({ children }) => {
     const [students, setStudents] = useState(() => {
         const saved = JSON.parse(localStorage.getItem('students'));
         // If saved data lacks new fields, reset to enriched defaults
-        if (!saved || !saved[0]?.email) return defaultStudents;
-        return saved;
+        const initialStudents = (!saved || !saved[0]?.email) ? defaultStudents : saved;
+
+        return initialStudents.map(student => {
+            const isDefaultEmail = student.email?.endsWith('@students.dms.edu');
+            return {
+                ...student,
+                email: isDefaultEmail ? '' : (student.email || ''),
+                avatar: studentPhotoMap[student.rollNo] || (student.avatar?.includes('dicebear') ? null : student.avatar) || `https://api.dicebear.com/7.x/avataaars/svg?seed=${student.rollNo}`
+            };
+        });
     });
     const defaultDepartments = [
         { id: 'CSE', name: 'Computer Science & Engineering', head: 'Dr. Alan Turing', faculty: 42, students: 850, status: 'Active' },
@@ -131,19 +140,35 @@ export const AppProvider = ({ children }) => {
         });
         return merged;
     });
-    const [courses, setCourses] = useState(() => JSON.parse(localStorage.getItem('courses')) || [
-        { id: 1, code: 'CS101', name: 'Introduction to Computer Science', credits: 4, faculty: 'Dr. Smith', desc: 'Basic concepts of CS.', outcome: 'Students will understand basics of algorithms and data structures.' },
-        { id: 2, code: 'CS102', name: 'Data Structures', credits: 4, faculty: 'Prof. Johnson', desc: 'Advanced topic in DS.', outcome: 'Students will master trees, graphs, and hash tables.' }
-    ]);
+    const defaultCourses = [
+        { id: 'C1', code: '24UMA463', name: 'Operations Research', type: 'Theory', credits: 4, faculty: 'Dr CHELLAPRIYA K', desc: 'Category: Theory | Hours: 7 | Abbreviation: OR', outcome: 'Understanding Operations Research' },
+        { id: 'C2', code: '24UAM411', name: 'Artificial Intelligence', type: 'Integrated', credits: 4, faculty: 'Dr NIRMALA DEVI J, Ms RAAKESH M', desc: 'Category: Integrated Course | Hours: 4+3 | Abbreviation: AI', outcome: 'Mastering AI principles' },
+        { id: 'C3', code: '24UCB513', name: 'Object Oriented Approach for Software Engineering', type: 'Integrated', credits: 3, faculty: 'Ms ARUNA R, Ms RAAKESH M', desc: 'Category: Integrated Course | Hours: 4+3 | Abbreviation: OOSE', outcome: 'Software Engineering approaches' },
+        { id: 'C4', code: '24UCS511', name: 'Computer Networks', type: 'Integrated', credits: 4, faculty: 'Ms YAMUNA S, Ms JASMINI SARANYA P', desc: 'Category: Integrated Course | Hours: 4+2 | Abbreviation: CN', outcome: 'Understanding Computer Networks' },
+        { id: 'C5', code: '24UCS414', name: 'Operating Systems', type: 'Integrated', credits: 4, faculty: 'MR RAAKESH M, Ms ANITHA M', desc: 'Category: Integrated Course | Hours: 4+3 | Abbreviation: OS', outcome: 'Concepts of Operating Systems' },
+        { id: 'C6', code: '24UCPE12 / 24UCPE11', name: 'Research Methodology / Entrepreneurship Development', type: 'Integrated', credits: 0, faculty: 'Ms AKILANDESWARI M, Dr K KARTHIK', desc: 'Category: Integrated Course | Hours: 4 | Abbreviation: RM/ED', outcome: 'Research and Entrepreneurship' },
+        { id: 'C7', code: 'LL', name: 'Life Lab', type: 'Lab', credits: 0, faculty: 'Ms LALITHA, Mr GLADWIN JOHN', desc: 'Category: Integrated Course | Hours: 2 | Abbreviation: LL', outcome: 'Life skills and well-being' },
+        { id: 'C8', code: 'CS', name: 'Communication Skill', type: 'Lab', credits: 0, faculty: 'TBD', desc: 'Category: Integrated Course | Abbreviation: CS', outcome: 'Improving communication skills' }
+    ];
+
+    const [courses, setCourses] = useState(() => {
+        const isSeeded = localStorage.getItem('dms_courses_faculty_seeded_v1');
+        const saved = JSON.parse(localStorage.getItem('courses'));
+        if (!isSeeded) return defaultCourses;
+        // Strict preservation: if seeded, whatever is in saved gets used. We ONLY fallback to default if saved is literally null/missing, not if it's empty.
+        // If the user deleted all items, saved is [], and we SHOULD return [] so it stays deleted.
+        return saved !== null ? saved : defaultCourses;
+    });
+
     const defaultFaculty = [
         { id: 'F1', name: 'Dr CHELLAPRIYA K', dept: 'S&H', role: 'Associate Professor', subject: 'Operations Research', email: 'chellapriya@dms.edu', phone: '+91 98400 11001', qualification: 'Ph.D. Mathematics', experience: '14 years', specialization: 'Operations Research, Linear Programming', publications: 8, avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=chellapriya' },
-        { id: 'F2', name: 'Dr NIRMALA DEVI J', dept: 'AI&ML', role: 'Professor', subject: 'Artificial Intelligence', email: 'nirmala@dms.edu', phone: '+91 98400 11002', qualification: 'Ph.D. AI, M.E. CSE', experience: '20 years', specialization: 'AI, Machine Learning, Deep Learning', publications: 24, avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=nirmala' },
-        { id: 'F3', name: 'Ms RAAKESH M', dept: 'AI&ML', role: 'Assistant Professor', subject: 'AI / OOSE / OS', email: 'raakesh@dms.edu', phone: '+91 98400 11003', qualification: 'M.E. CSE', experience: '7 years', specialization: 'Software Engineering, OS, AI', publications: 5, avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=raakesh' },
-        { id: 'F4', name: 'Ms ARUNA R', dept: 'AI&ML', role: 'Assistant Professor', subject: 'OOSE', email: 'aruna@dms.edu', phone: '+91 98400 11004', qualification: 'M.E. CSE', experience: '6 years', specialization: 'OOP, UML, Design Patterns', publications: 3, avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=aruna' },
-        { id: 'F5', name: 'Ms YAMUNA S', dept: 'AI&DS', role: 'Assistant Professor', subject: 'Computer Networks', email: 'yamuna@dms.edu', phone: '+91 98400 11005', qualification: 'M.E. Networks', experience: '9 years', specialization: 'Computer Networks, IoT, Network Security', publications: 7, avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=yamuna' },
-        { id: 'F6', name: 'Ms JASMINI SARANYA P', dept: 'AI&DS', role: 'Assistant Professor', subject: 'Computer Networks', email: 'jasmini@dms.edu', phone: '+91 98400 11006', qualification: 'M.Tech Networks', experience: '5 years', specialization: 'Wireless Networks, SDN', publications: 2, avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=jasmini' },
+        { id: 'F2', name: 'Dr NIRMALA DEVI J (I)', dept: 'AI&ML', role: 'Professor', subject: 'Artificial Intelligence', email: 'nirmala@dms.edu', phone: '+91 98400 11002', qualification: 'Ph.D. AI, M.E. CSE', experience: '20 years', specialization: 'AI, Machine Learning, Deep Learning', publications: 24, avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=nirmala' },
+        { id: 'F3', name: 'Ms RAAKESH M (A)', dept: 'AI&ML', role: 'Assistant Professor', subject: 'Artificial Intelligence, OOSE', email: 'raakesh@dms.edu', phone: '+91 98400 11003', qualification: 'M.E. CSE', experience: '7 years', specialization: 'Software Engineering, OS, AI', publications: 5, avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=raakesh' },
+        { id: 'F4', name: 'Ms ARUNA R (I)', dept: 'AI&ML', role: 'Assistant Professor', subject: 'Object Oriented Approach for Software Engineering', email: 'aruna@dms.edu', phone: '+91 98400 11004', qualification: 'M.E. CSE', experience: '6 years', specialization: 'OOP, UML, Design Patterns', publications: 3, avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=aruna' },
+        { id: 'F5', name: 'Ms YAMUNA S (I)', dept: 'AI&DS', role: 'Assistant Professor', subject: 'Computer Networks', email: 'yamuna@dms.edu', phone: '+91 98400 11005', qualification: 'M.E. Networks', experience: '9 years', specialization: 'Computer Networks, IoT, Network Security', publications: 7, avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=yamuna' },
+        { id: 'F6', name: 'Ms JASMINI SARANYA P (A)', dept: 'AI&DS', role: 'Assistant Professor', subject: 'Computer Networks', email: 'jasmini@dms.edu', phone: '+91 98400 11006', qualification: 'M.Tech Networks', experience: '5 years', specialization: 'Wireless Networks, SDN', publications: 2, avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=jasmini' },
         { id: 'F7', name: 'MR RAAKESH M (I)', dept: 'AI&ML', role: 'Assistant Professor', subject: 'Operating Systems', email: 'raakesh2@dms.edu', phone: '+91 98400 11007', qualification: 'M.E. CSE', experience: '7 years', specialization: 'Operating Systems, Virtualization', publications: 4, avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=raakeshI' },
-        { id: 'F8', name: 'Ms ANITHA M', dept: 'AI&ML', role: 'Assistant Professor', subject: 'Operating Systems', email: 'anitha@dms.edu', phone: '+91 98400 11008', qualification: 'M.E. CSE', experience: '8 years', specialization: 'OS, Distributed Systems', publications: 6, avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=anitha' },
+        { id: 'F8', name: 'Ms ANITHA M (A)', dept: 'AI&ML', role: 'Assistant Professor', subject: 'Operating Systems', email: 'anitha@dms.edu', phone: '+91 98400 11008', qualification: 'M.E. CSE', experience: '8 years', specialization: 'OS, Distributed Systems', publications: 6, avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=anitha' },
         { id: 'F9', name: 'Ms AKILANDESWARI M', dept: 'AI&DS', role: 'Assistant Professor', subject: 'Research Methodology', email: 'akilandeswari@dms.edu', phone: '+91 98400 11009', qualification: 'M.Phil. CS', experience: '10 years', specialization: 'Research Methods, Data Science', publications: 9, avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=akilandeswari' },
         { id: 'F10', name: 'Dr K KARTHIK', dept: 'Mech', role: 'Assistant Professor', subject: 'Entrepreneurship Development', email: 'karthik@dms.edu', phone: '+91 98400 11010', qualification: 'Ph.D. Management', experience: '12 years', specialization: 'Entrepreneurship, Innovation Management', publications: 11, avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=karthik' },
         { id: 'F11', name: 'Ms LALITHA', dept: 'S&H', role: 'Faculty', subject: 'Life Lab', email: 'lalitha@dms.edu', phone: '+91 98400 11011', qualification: 'M.A. Soft Skills', experience: '6 years', specialization: 'Communication, Leadership, Soft Skills', publications: 1, avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=lalitha' },
@@ -151,10 +176,12 @@ export const AppProvider = ({ children }) => {
     ];
 
     const [faculty, setFaculty] = useState(() => {
+        const isSeeded = localStorage.getItem('dms_courses_faculty_seeded_v1');
         const saved = JSON.parse(localStorage.getItem('faculty'));
-        // If saved data lacks new fields, reset to defaults
-        if (!saved || !saved[0]?.email) return defaultFaculty;
-        return saved;
+        if (!isSeeded) return defaultFaculty;
+        // Strict preservation: if seeded, whatever is in saved gets used. We ONLY fallback to default if saved is literally null/missing, not if it's empty.
+        // If the user deleted all items, saved is [], and we SHOULD return [] so it stays deleted.
+        return saved !== null ? saved : defaultFaculty;
     });
     const [attendance, setAttendance] = useState(() => JSON.parse(localStorage.getItem('attendance')) || []);
     const [examResults, setExamResults] = useState(() => JSON.parse(localStorage.getItem('examResults')) || []);
@@ -165,6 +192,7 @@ export const AppProvider = ({ children }) => {
     const [fees, setFees] = useState(() => JSON.parse(localStorage.getItem('fees')) || []);
 
     useEffect(() => {
+        localStorage.setItem('dms_courses_faculty_seeded_v1', 'true');
         localStorage.setItem('currentUser', JSON.stringify(currentUser));
         localStorage.setItem('departments', JSON.stringify(departments));
         localStorage.setItem('students', JSON.stringify(students));
