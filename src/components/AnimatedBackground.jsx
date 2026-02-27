@@ -17,7 +17,19 @@ const colorThemes = [
 ];
 
 const AnimatedBackground = () => {
-    const [themeIndex, setThemeIndex] = useState(0);
+    // Pick a completely random theme on every single page load/refresh
+    const [themeIndex, setThemeIndex] = useState(() => Math.floor(Math.random() * colorThemes.length));
+
+    // Generate random animation drift patterns so the orbs move differently on every refresh
+    const [animConfig] = useState(() => ({
+        dur1: 10 + Math.random() * 8, // 10s to 18s
+        dur2: 12 + Math.random() * 8,
+        dur3: 8 + Math.random() * 6,
+        x1: 40 + Math.random() * 60,
+        y1: 20 + Math.random() * 40,
+        x2: -30 - Math.random() * 50,
+        y2: 60 + Math.random() * 60,
+    }));
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -39,10 +51,10 @@ const AnimatedBackground = () => {
                 animate={{
                     scale: [1, 1.2, 1],
                     opacity: [0.4, 0.7, 0.4],
-                    x: [0, 50, 0],
-                    y: [0, 30, 0]
+                    x: [0, animConfig.x1, 0],
+                    y: [0, animConfig.y1, 0]
                 }}
-                transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
+                transition={{ duration: animConfig.dur1, repeat: Infinity, ease: "linear" }}
                 className={`absolute top-0 left-1/4 w-[600px] h-[600px] ${theme.orb1} rounded-full blur-[100px] mix-blend-screen transition-colors duration-[3000ms]`}
             />
 
@@ -50,10 +62,10 @@ const AnimatedBackground = () => {
                 animate={{
                     scale: [1, 1.3, 1],
                     opacity: [0.3, 0.6, 0.3],
-                    x: [0, -40, 0],
-                    y: [0, 80, 0]
+                    x: [0, animConfig.x2, 0],
+                    y: [0, animConfig.y2, 0]
                 }}
-                transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+                transition={{ duration: animConfig.dur2, repeat: Infinity, ease: "linear" }}
                 className={`absolute bottom-0 right-1/4 w-[700px] h-[700px] ${theme.orb2} rounded-full blur-[120px] mix-blend-screen transition-colors duration-[3000ms]`}
             />
 
@@ -62,7 +74,7 @@ const AnimatedBackground = () => {
                     scale: [1, 1.1, 1],
                     opacity: [0.2, 0.5, 0.2],
                 }}
-                transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+                transition={{ duration: animConfig.dur3, repeat: Infinity, ease: "linear" }}
                 className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] ${theme.orb3} rounded-full blur-[130px] mix-blend-screen transition-colors duration-[3000ms]`}
             />
 
