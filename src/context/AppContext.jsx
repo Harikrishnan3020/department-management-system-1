@@ -190,6 +190,7 @@ export const AppProvider = ({ children }) => {
     const [googleForms, setGoogleForms] = useState(() => JSON.parse(localStorage.getItem('googleForms')) || []);
     const [courseraLinks, setCourseraLinks] = useState(() => JSON.parse(localStorage.getItem('courseraLinks')) || []);
     const [fees, setFees] = useState(() => JSON.parse(localStorage.getItem('fees')) || []);
+    const [requestLetters, setRequestLetters] = useState(() => JSON.parse(localStorage.getItem('requestLetters')) || []);
 
     useEffect(() => {
         localStorage.setItem('dms_courses_faculty_seeded_v1', 'true');
@@ -205,7 +206,8 @@ export const AppProvider = ({ children }) => {
         localStorage.setItem('googleForms', JSON.stringify(googleForms));
         localStorage.setItem('courseraLinks', JSON.stringify(courseraLinks));
         localStorage.setItem('fees', JSON.stringify(fees));
-    }, [currentUser, departments, students, courses, faculty, attendance, examResults, notifications, magazine, googleForms, courseraLinks, fees]);
+        localStorage.setItem('requestLetters', JSON.stringify(requestLetters));
+    }, [currentUser, departments, students, courses, faculty, attendance, examResults, notifications, magazine, googleForms, courseraLinks, fees, requestLetters]);
 
     const login = (role, id, name) => {
         setCurrentUser({ role, id, name });
@@ -228,7 +230,8 @@ export const AppProvider = ({ children }) => {
             magazine, setMagazine,
             googleForms, setGoogleForms,
             courseraLinks, setCourseraLinks,
-            fees, setFees
+            fees, setFees,
+            requestLetters, setRequestLetters
         }}>
             {children}
         </AppContext.Provider>

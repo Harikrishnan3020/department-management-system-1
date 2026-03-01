@@ -1,25 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { motion } from 'framer-motion';
 import { ParallaxProvider, Parallax } from 'react-scroll-parallax';
+import { AppContext } from '../../context/AppContext';
 import '../../assets/css/portfolio.css';
 
-const rawStudentData = [
-    "AARTHI S", "ABISEK T V", "ABISHEK S", "ADHITHYA S P", "AISHWARYA M",
-    "AKSHAYAA A S", "ANGELINA A", "ANISH SURIYA J", "ARCHANA V", "BALAMURUGAN S",
-    "BHAVATHARINI T M", "DHARSHINI R", "DHARSHINI R", "DHARUNIKA N", "DINESH KUMAR S",
-    "EZHILAN K", "GOGUL AANANTH Y", "GOPIKA G", "HARIKRISHNAN S", "HARISBALAJI G",
-    "HEMAPRABU P", "KABILAN G", "KARNIKA V", "KARTHIKEYAN M", "KEERTHANAPRIYA S",
-    "KRITHIKA N", "MADHANRAJ D", "MADURAVALLI V", "MANUJANA N", "MEERASOUNDHARYA R",
-    "MITHRAA N", "MOHAMED MYDEEN J", "MOHAMMED MINHAJ A", "NANDHINI S", "NITHISH A",
-    "NIVEDA SREE DHANDAPANI", "PRAVEEN P", "RAMYA G", "RANJITH KUMAR K", "RATHISH T",
-    "RITHIKA S", "RITHISH K", "ROSHMITA V", "SAIRAM K", "SANDHYA B",
-    "SANJAY K", "SANTHIYA M", "SHAKTHI RITHANYA S", "SHALINI R", "SHEIK NATHARSHA A",
-    "SHWETHA S", "SIVARAM A M", "SOWMYA M", "SOWMYA S", "SREE NIVETHA N",
-    "SRI VATSAN S", "SRIHARIPRIYA P", "SRIMATHI K", "SRUTHI R", "VAISHNAVI S",
-    "VARUN K J", "VIGNESH K", "VIGNESH RAJ S", "HARIPRIYA J", "SIDDHARTH P"
-];
-
 const Portfolio = () => {
+    const { students } = useContext(AppContext);
     const [scrolled, setScrolled] = useState(false);
 
     useEffect(() => {
@@ -344,16 +330,16 @@ const Portfolio = () => {
                         <div className="student-db-preview mt-40">
                             <h4 className="mb-20 text-center text-muted">A subset of our generated Student Base (65+ Records)</h4>
                             <div className="student-tags-container" id="student-tags">
-                                {rawStudentData.map((name, i) => (
+                                {students && students.map((student, i) => (
                                     <motion.span
                                         key={i}
                                         className="student-tag"
                                         initial={{ opacity: 0, scale: 0.8 }}
                                         whileInView={{ opacity: 1, scale: 1 }}
-                                        transition={{ delay: i * 0.02 }}
+                                        transition={{ delay: (i % 50) * 0.02 }} // Cap delay
                                         viewport={{ once: true }}
                                     >
-                                        {name}
+                                        {student.name}
                                     </motion.span>
                                 ))}
                             </div>

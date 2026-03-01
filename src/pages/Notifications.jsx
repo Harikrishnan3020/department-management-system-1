@@ -2,21 +2,42 @@ import React, { useContext } from 'react';
 import { motion } from 'framer-motion';
 import { Bell, CheckCircle, XCircle } from 'lucide-react';
 import { AppContext } from '../context/AppContext';
+import { useNavigate } from 'react-router-dom';
 
 const Notifications = () => {
     const { currentUser, notifications, setNotifications, setAttendance } = useContext(AppContext);
     const isAuthorized = currentUser?.role === 'Admin' || currentUser?.role === 'Faculty';
+    const navigate = useNavigate();
 
-    const handleApproveOD = (notifIndex, studentId) => {
+    const handleApproveOD = (e, notifIndex, studentId) => {
+        e.stopPropagation();
         setAttendance(prev => prev.map(a => (a.studentId === studentId && a.status === 'OD Pending') ? { ...a, status: 'OD Approved' } : a));
         setNotifications(prev => prev.filter((_, i) => i !== notifIndex));
         alert('OD Request Approved');
     };
 
-    const handleRejectOD = (notifIndex, studentId) => {
+    const handleRejectOD = (e, notifIndex, studentId) => {
+        e.stopPropagation();
         setAttendance(prev => prev.map(a => (a.studentId === studentId && a.status === 'OD Pending') ? { ...a, status: 'OD Rejected' } : a));
         setNotifications(prev => prev.filter((_, i) => i !== notifIndex));
         alert('OD Request Rejected');
+    };
+
+    const handleNotificationClick = (notif) => {
+        const type = notif.type.toLowerCase();
+        if (type.includes('request letter')) {
+            navigate('/request-letter');
+        } else if (type.includes('od request') || type.includes('attendance') || type.includes('absent')) {
+            navigate('/attendance');
+        } else if (type.includes('magazine') || type.includes('paper')) {
+            navigate('/magazine');
+        } else if (type.includes('google form') || type.includes('survey')) {
+            navigate('/google-form');
+        } else if (type.includes('coursera')) {
+            navigate('/coursera');
+        } else {
+            navigate('/dashboard');
+        }
     };
 
     return (
@@ -44,31 +65,33 @@ const Notifications = () => {
                                 animate={{ opacity: 1, scale: 1 }}
                                 transition={{ delay: i * 0.05 }}
                                 key={i}
-                                className="bg-slate-900/60 border border-white/5 p-6 rounded-2xl hover:bg-white/5 hover:border-white/10 transition-colors flex flex-col"
+                                onClick={() => handleNotificationClick(notif)}
+                                className="bg-slate-900/60 border border-white/5 p-6 rounded-2xl cursor-pointer hover:bg-white/5 hover:border-white/10 transition-colors flex flex-col group relative overflow-hidden"
                             >
-                                <div className="flex-1 border-b border-white/10 pb-4 mb-4">
+                                <div className="absolute inset-0 bg-gradient-to-r from-electric-blue/0 to-royal-purple/0 group-hover:from-electric-blue/5 group-hover:to-royal-purple/5 transition-all"></div>
+                                <div className="flex-1 border-b border-white/10 pb-4 mb-4 relative z-10">
                                     <h4 className="text-white font-black text-lg mb-2 text-glow">{notif.type}</h4>
                                     <p className="text-sm text-slate-300 leading-relaxed">{notif.message}</p>
                                 </div>
 
                                 {isAuthorized && notif.type.includes('OD Request') && (
-                                    <div className="flex space-x-3 mt-auto">
-                                        <button onClick={() => handleRejectOD(i, notif.from)} className="flex-1 py-2.5 bg-rose-500/10 text-rose-500 rounded-xl text-sm font-bold hover:bg-rose-500/20 border border-rose-500/30 flex items-center justify-center space-x-2 transition-all hover:scale-[1.02]">
+                                    <div className="flex space-x-3 mt-auto relative z-10">
+                                        <button onClick={(e) => handleRejectOD(e, i, notif.from)} className="flex-1 py-2.5 bg-rose-500/10 text-rose-500 rounded-xl text-sm font-bold hover:bg-rose-500/20 border border-rose-500/30 flex items-center justify-center space-x-2 transition-all hover:scale-[1.02]">
                                             <XCircle size={16} /><span>Reject OD</span>
                                         </button>
-                                        <button onClick={() => handleApproveOD(i, notif.from)} className="flex-1 py-2.5 bg-emerald-glow/10 text-emerald-glow rounded-xl text-sm font-bold hover:bg-emerald-glow/20 border border-emerald-glow/30 flex items-center justify-center space-x-2 transition-all hover:scale-[1.02]">
+                                        <button onClick={(e) => handleApproveOD(e, i, notif.from)} className="flex-1 py-2.5 bg-emerald-glow/10 text-emerald-glow rounded-xl text-sm font-bold hover:bg-emerald-glow/20 border border-emerald-glow/30 flex items-center justify-center space-x-2 transition-all hover:scale-[1.02]">
                                             <CheckCircle size={16} /><span>Approve OD</span>
                                         </button>
                                     </div>
                                 )}
                                 {(notif.type.includes('Paper Request') || notif.type.includes('Absent Alert') || notif.type.includes('Coursera') || notif.type.includes('Google Form') || notif.type.includes('Coursera Submission')) ? (
-                                    <div className="mt-auto pt-2 flex justify-between items-center">
+                                    <div className="mt-auto pt-4 flex justify-between items-center relative z-10">
                                         <span className="text-xs font-bold text-electric-blue bg-electric-blue/10 px-2 py-1 rounded">System Notification</span>
-                                        <button onClick={() => setNotifications(prev => prev.filter((_, idx) => idx !== i))} className="text-xs text-slate-500 hover:text-rose-400 font-bold transition-colors">Dismiss</button>
+                                        <button onClick={(e) => { e.stopPropagation(); setNotifications(prev => prev.filter((_, idx) => idx !== i)); }} className="text-xs text-slate-500 hover:text-rose-400 font-bold transition-colors bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-lg border border-white/10">Dismiss</button>
                                     </div>
                                 ) : (
-                                    <div className="mt-auto pt-2 flex justify-end">
-                                        <button onClick={() => setNotifications(prev => prev.filter((_, idx) => idx !== i))} className="text-xs text-slate-500 hover:text-rose-400 font-bold transition-colors">Dismiss</button>
+                                    <div className="mt-auto pt-4 flex justify-end relative z-10">
+                                        <button onClick={(e) => { e.stopPropagation(); setNotifications(prev => prev.filter((_, idx) => idx !== i)); }} className="text-xs text-slate-500 hover:text-rose-400 font-bold transition-colors bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-lg border border-white/10">Dismiss</button>
                                     </div>
                                 )}
                             </motion.div>

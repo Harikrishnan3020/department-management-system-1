@@ -214,73 +214,81 @@ In conclusion, the success of this initiative has set an inspiring precedent for
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0, scale: 0.95 }}
-                                    className={`glass-card p-6 rounded-[2rem] border border-glass-border shadow-glass-card group flex ${article.templateType === 'template2' ? 'flex-col' : 'flex-col md:flex-row'} gap-8 relative`}
+                                    className="relative group w-full max-w-[850px] mx-auto mb-16 overflow-hidden rounded-xl shadow-[0_30px_60px_-15px_rgba(0,0,0,0.8)]"
                                 >
-                                    <div className={`w-full ${article.templateType === 'template2' ? 'h-80' : 'sm:w-2/5 aspect-[4/3]'} bg-slate-900 rounded-xl overflow-hidden border border-white/10 relative shrink-0`}>
-                                        <img src={article.image} alt={article.title} className="w-full h-full object-contain bg-black/40 group-hover:scale-105 transition-transform duration-700" />
-                                        {article.templateType === 'template2' && (
-                                            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-900 via-slate-900/80 to-transparent p-6 pt-12">
-                                                <h3 className="text-3xl md:text-5xl font-black text-white leading-tight font-serif drop-shadow-lg">{article.title}</h3>
-                                            </div>
+                                    {/* Transparent Action Bar on Hover */}
+                                    <div className="absolute top-4 right-4 z-50 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                        <button onClick={() => downloadArticle(article)} className="p-2.5 bg-slate-900/80 text-white rounded-full hover:bg-luxury-gold hover:text-slate-900 transition-colors shadow-lg backdrop-blur-md" title="Download Article">
+                                            <Download size={18} />
+                                        </button>
+                                        {editingId === article.id ? (
+                                            <button onClick={() => handleEditSave(article.id)} className="p-2.5 bg-emerald-500/80 text-white rounded-full hover:bg-emerald-400 transition-colors shadow-lg backdrop-blur-md">
+                                                <CheckCircle size={18} />
+                                            </button>
+                                        ) : (
+                                            <button onClick={() => { setEditingId(article.id); setEditContent(article.content); }} className="p-2.5 bg-slate-900/80 text-white rounded-full hover:bg-electric-blue transition-colors shadow-lg backdrop-blur-md">
+                                                <Edit3 size={18} />
+                                            </button>
                                         )}
+                                        <button onClick={() => handleDelete(article.id)} className="p-2.5 bg-rose-500/80 text-white rounded-full hover:bg-rose-400 transition-colors shadow-lg backdrop-blur-md">
+                                            <Trash2 size={18} />
+                                        </button>
                                     </div>
-                                    <div className="flex-1 flex flex-col w-full">
-                                        <div className="flex justify-between items-start mb-2 pr-8 relative">
-                                            {article.templateType !== 'template2' && (
-                                                <h3 className="text-2xl md:text-4xl font-black text-white leading-tight font-serif mb-2">{article.title}</h3>
-                                            )}
-                                            <div className="flex space-x-2 absolute top-0 right-0">
-                                                <button onClick={() => downloadArticle(article)} className="text-luxury-gold hover:text-white transition-colors bg-luxury-gold/10 p-2 rounded-lg" title="Download Article">
-                                                    <Download size={18} />
-                                                </button>
-                                                {editingId === article.id ? (
-                                                    <button onClick={() => handleEditSave(article.id)} className="text-emerald-glow hover:text-white transition-colors bg-emerald-glow/10 p-2 rounded-lg">
-                                                        <CheckCircle size={18} />
-                                                    </button>
-                                                ) : (
-                                                    <button onClick={() => { setEditingId(article.id); setEditContent(article.content); }} className="text-slate-400 hover:text-electric-blue transition-colors bg-slate-800 p-2 rounded-lg group-hover:bg-white/10">
-                                                        <Edit3 size={18} />
-                                                    </button>
-                                                )}
-                                                <button onClick={() => handleDelete(article.id)} className="text-slate-400 hover:text-rose-500 transition-colors bg-slate-800 p-2 rounded-lg group-hover:bg-white/10">
-                                                    <Trash2 size={18} />
-                                                </button>
+
+                                    {/* Custom Magazine Page Body */}
+                                    <div className="bg-[#1a6b82] p-8 md:p-12 relative flex flex-col h-full min-h-[900px]">
+
+                                        {/* Subtle texture overlay */}
+                                        <div className="absolute inset-0 opacity-10 pointer-events-none mix-blend-overlay" style={{ backgroundImage: 'url("https://grainy-gradients.vercel.app/noise.svg")' }}></div>
+
+                                        {/* Top Image & Title Banner */}
+                                        <div className="relative bg-white pt-2.5 px-2.5 pb-8 md:pt-4 md:px-4 md:pb-10 shadow-2xl mb-12 transform -rotate-1 hover:rotate-0 transition-transform duration-500 z-10 w-[95%] mx-auto">
+                                            <div className="relative overflow-hidden w-full aspect-[4/3] max-h-[450px]">
+                                                <img src={article.image} alt={article.title} className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-[2000ms]" />
                                             </div>
-                                        </div>
-                                        <div className="text-xs text-luxury-gold font-bold tracking-wider uppercase mb-6 pb-2 border-b border-white/10">
-                                            {article.date} &bull; Admin / Faculty &bull; Published
+
+                                            {/* Stylized Floating Title Wrapper */}
+                                            <div className="absolute -top-4 right-0 md:top-6 md:-right-8 bg-white/95 px-8 py-4 shadow-2xl backdrop-blur-sm z-20" style={{ borderBottom: '6px solid #1a6b82' }}>
+                                                <h3 className="text-4xl md:text-6xl text-[#0d3440] font-bold" style={{ fontFamily: '"Dancing Script", cursive' }}>
+                                                    {article.title}
+                                                </h3>
+                                            </div>
                                         </div>
 
+                                        {/* Article Typography Below */}
                                         {editingId === article.id ? (
                                             <textarea
-                                                className="w-full flex-1 bg-slate-900 border border-electric-blue/50 rounded-xl p-3 text-slate-300 font-serif leading-relaxed focus:outline-none focus:shadow-glow-blue transition-shadow mt-2"
+                                                className="w-full flex-1 bg-white/10 border border-white/20 rounded-xl p-6 text-slate-100 focus:outline-none transition-shadow min-h-[450px] relative z-10"
                                                 value={editContent}
                                                 onChange={(e) => setEditContent(e.target.value)}
-                                                rows={15}
-                                                style={{ fontFamily: '"Times New Roman", Times, serif', fontSize: '16px', lineHeight: '1.5' }}
+                                                style={{ fontFamily: '"Playfair Display", serif', fontSize: '1.1rem', lineHeight: '1.8' }}
                                             />
                                         ) : (
-                                            <div className="flex-1 flex flex-col">
-                                                <p
-                                                    className="text-slate-200 leading-relaxed whitespace-pre-wrap flex-1"
-                                                    style={{ fontFamily: '"Times New Roman", Times, serif', fontSize: '16px', lineHeight: '1.5' }}
-                                                >
-                                                    {article.content}
-                                                </p>
-                                                <div className="mt-6 flex flex-wrap gap-2 pt-4 border-t border-white/10">
-                                                    {article.templateLink && (
-                                                        <a href={article.templateLink} target="_blank" rel="noopener noreferrer" className="px-3 py-1 bg-royal-purple/20 text-royal-purple rounded font-bold text-xs flex items-center space-x-1 hover:bg-royal-purple/30">
-                                                            <LinkIcon size={12} /> <span>External Template Link</span>
-                                                        </a>
-                                                    )}
-                                                    {article.templateFile && (
-                                                        <span className="px-3 py-1 bg-electric-blue/20 text-electric-blue rounded font-bold text-xs flex items-center space-x-1">
-                                                            <FileBadge size={12} /> <span>{article.templateFile}</span>
-                                                        </span>
-                                                    )}
-                                                </div>
+                                            <div className="text-[#d8eff5] space-y-6 px-4 md:px-10 relative z-10" style={{ fontFamily: '"Playfair Display", serif', fontSize: '0.95rem', lineHeight: '1.9', textAlign: 'justify' }}>
+                                                {article.content.split('\n').map((para, i) => {
+                                                    if (!para.trim()) return null;
+                                                    return (
+                                                        <p key={i}>
+                                                            {para}
+                                                        </p>
+                                                    );
+                                                })}
                                             </div>
                                         )}
+
+                                        <div className="mt-auto pt-10 px-4 md:px-10 flex flex-wrap gap-2 relative z-10">
+                                            {article.templateLink && (
+                                                <a href={article.templateLink} target="_blank" rel="noopener noreferrer" className="px-4 py-1.5 bg-[#0d3440]/80 text-[#d8eff5] rounded font-bold text-xs flex items-center space-x-2 hover:bg-[#0d3440] transition-colors shadow-lg">
+                                                    <LinkIcon size={14} /> <span>External Link Attached</span>
+                                                </a>
+                                            )}
+                                            {article.templateFile && (
+                                                <span className="px-4 py-1.5 bg-white/20 text-white rounded font-bold text-xs flex items-center space-x-2 shadow-lg backdrop-blur-sm">
+                                                    <FileBadge size={14} /> <span>{article.templateFile}</span>
+                                                </span>
+                                            )}
+                                        </div>
+
                                     </div>
                                 </motion.div>
                             ))

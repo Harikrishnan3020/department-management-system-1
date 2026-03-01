@@ -1,7 +1,9 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { motion } from 'framer-motion';
-import { Building2, Users, GraduationCap, BookOpen, TrendingUp, Activity, Bell, CheckCircle, XCircle } from 'lucide-react';
+import { Building2, Users, GraduationCap, BookOpen, TrendingUp, Activity, Bell, FileText, CheckCircle, XCircle, X, Calendar } from 'lucide-react';
 import { AppContext } from '../context/AppContext';
+import { Link } from 'react-router-dom';
+import { AnimatePresence } from 'framer-motion';
 
 const CountUp = ({ to, duration = 2 }) => {
     const [count, setCount] = useState(0);
@@ -31,15 +33,85 @@ const CountUp = ({ to, duration = 2 }) => {
 };
 
 const Dashboard = () => {
-    const { currentUser, notifications, setNotifications, setAttendance } = useContext(AppContext);
+    const { currentUser, notifications, setNotifications, attendance, requestLetters, setRequestLetters, students, departments, faculty, courses } = useContext(AppContext);
     const isAuthorized = currentUser?.role === 'Admin' || currentUser?.role === 'Faculty';
+    const [selectedAbsentees, setSelectedAbsentees] = useState(null);
+
+    const pendingRequests = requestLetters?.filter(r => r.status === 'Pending') || [];
+
+    const handleApproveRequest = (id) => {
+        setRequestLetters(prev => prev.map(r => r.id === id ? { ...r, status: 'Approved' } : r));
+        setNotifications(prev => [
+            { type: 'Request Letter Approved', message: `Your request letter has been approved.`, date: new Date().toISOString() },
+            ...prev,
+        ]);
+        alert('Request approved.');
+    };
+
+    const handleRejectRequest = (id) => {
+        setRequestLetters(prev => prev.map(r => r.id === id ? { ...r, status: 'Rejected' } : r));
+        setNotifications(prev => [
+            { type: 'Request Letter Rejected', message: `Your request letter has been rejected.`, date: new Date().toISOString() },
+            ...prev,
+        ]);
+        alert('Request rejected.');
+    };
 
     const stats = [
-        { title: 'Total Departments', value: 12, icon: Building2, color: 'electric-blue', trend: '+2%' },
-        { title: 'Faculty Members', value: 248, icon: Users, color: 'royal-purple', trend: '+5%' },
-        { title: 'Enrolled Students', value: 4500, icon: GraduationCap, color: 'emerald-glow', trend: '+12%' },
-        { title: 'Active Courses', value: 312, icon: BookOpen, color: 'luxury-gold', trend: '+8%' },
+        { title: 'Total Departments', value: departments?.length || 0, icon: Building2, color: 'electric-blue', trend: '+2%' },
+        { title: 'Faculty Members', value: faculty?.length || 0, icon: Users, color: 'royal-purple', trend: '+5%' },
+        { title: 'Enrolled Students', value: students?.length || 0, icon: GraduationCap, color: 'emerald-glow', trend: '+12%' },
+        { title: 'Active Courses', value: courses?.length || 0, icon: BookOpen, color: 'luxury-gold', trend: '+8%' },
     ];
+
+    const getWeekData = () => {
+        const now = new Date();
+        const dayOfWeek = now.getDay();
+        const numDay = now.getDate();
+        const start = new Date(now);
+        start.setDate(numDay - (dayOfWeek === 0 ? 6 : dayOfWeek - 1)); // Monday
+        start.setHours(0, 0, 0, 0);
+
+        now.setHours(23, 59, 59, 999);
+
+        const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        return dayNames.map((name, i) => {
+            const d = new Date(start);
+            d.setDate(start.getDate() + i);
+
+            const isFuture = d > now;
+
+            if (isFuture) {
+                return {
+                    day: name,
+                    dateStr: null,
+                    percentage: null,
+                    absentRecords: [],
+                    isFuture: true
+                };
+            }
+
+            // format to local string specifically to avoid timezone shifts
+            const dateStr = new Date(d.getTime() - (d.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+
+            const presentCount = attendance?.filter(a => a.date === dateStr && (a.status === 'Present' || a.status === 'OD Approved')).length || 0;
+            const absentRecords = attendance?.filter(a => a.date === dateStr && a.status === 'Absent') || [];
+
+            const totalStudents = students?.length || 1; // avoid div by 0
+            let percentage = Math.round((presentCount / totalStudents) * 100);
+            if (percentage > 100) percentage = 100;
+
+            return {
+                day: name,
+                dateStr,
+                percentage,
+                absentRecords,
+                isFuture: false
+            };
+        });
+    };
+
+    const weekData = getWeekData();
 
     const containerVariants = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.1 } } };
     const itemVariants = { hidden: { y: 20, opacity: 0 }, show: { y: 0, opacity: 1, transition: { type: "spring", stiffness: 300 } } };
@@ -98,26 +170,155 @@ const Dashboard = () => {
                         </div>
                     </div>
                     <div className="flex-1 border border-glass-border/50 rounded-xl relative flex items-end justify-between p-4 px-8 bg-slate-900/20">
-                        {[
-                            { day: 'Mon', percentage: 92 },
-                            { day: 'Tue', percentage: 88 },
-                            { day: 'Wed', percentage: 95 },
-                            { day: 'Thu', percentage: 85 },
-                            { day: 'Fri', percentage: 90 },
-                            { day: 'Sat', percentage: 76 },
-                        ].map((data, i) => (
+                        {weekData.map((data, i) => (
                             <div key={i} className="flex flex-col items-center justify-end h-full flex-1">
-                                <motion.div initial={{ height: 0 }} animate={{ height: `${data.percentage}%` }} transition={{ delay: 0.5 + i * 0.05, type: 'spring' }} className="w-12 sm:w-16 rounded-t-lg bg-gradient-to-t from-emerald-glow/10 to-emerald-glow/80 border-t border-emerald-glow/50 relative group mb-2">
-                                    <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-8 bg-black/80 px-2 py-1 rounded text-xs opacity-0 group-hover:opacity-100 transition-opacity border border-emerald-glow/20 pointer-events-none text-white font-bold whitespace-nowrap">
-                                        {data.percentage}%
-                                    </div>
-                                </motion.div>
-                                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">{data.day}</span>
+                                {!data.isFuture ? (
+                                    <motion.div
+                                        initial={{ height: 0 }}
+                                        animate={{ height: `${Math.max(data.percentage, 5)}%` }}
+                                        transition={{ delay: 0.5 + i * 0.05, type: 'spring' }}
+                                        onClick={() => setSelectedAbsentees(data)}
+                                        className="w-12 sm:w-16 rounded-t-lg bg-gradient-to-t from-emerald-glow/10 to-emerald-glow/80 border-t border-emerald-glow/50 relative group mb-2 cursor-pointer hover:shadow-[0_0_15px_rgba(16,185,129,0.5)] transition-shadow"
+                                    >
+                                        <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-8 bg-black/80 px-2 py-1 rounded text-xs opacity-0 group-hover:opacity-100 transition-opacity border border-emerald-glow/20 pointer-events-none text-white font-bold whitespace-nowrap z-20">
+                                            {data.percentage}%
+                                        </div>
+                                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none flex flex-col items-center justify-center">
+                                            <span className="text-[10px] font-bold text-white bg-black/50 px-1 rounded uppercase">View</span>
+                                        </div>
+                                    </motion.div>
+                                ) : (
+                                    <div className="w-12 sm:w-16 rounded-t-lg bg-white/5 border-t border-white/10 relative mb-2 h-[5%]"></div>
+                                )}
+                                <span className={`text-xs font-bold uppercase tracking-wider ${data.isFuture ? 'text-slate-600' : 'text-slate-400'}`}>{data.day}</span>
                             </div>
                         ))}
                     </div>
                 </motion.div>
             </div>
+
+            {/* Dashboard Pending Request Letters Section */}
+            {isAuthorized && pendingRequests.length > 0 && (
+                <div className="w-full">
+                    <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="w-full glass-card rounded-[2rem] border border-glass-border shadow-glass-card p-8 flex flex-col relative overflow-hidden">
+                        <div className="flex justify-between items-center mb-6 relative z-10">
+                            <div>
+                                <h2 className="text-2xl font-bold text-white mb-1 flex items-center gap-3">
+                                    <FileText className="text-amber-400" size={24} />
+                                    Pending Request Letters
+                                    <span className="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30 text-sm font-bold">
+                                        {pendingRequests.length}
+                                    </span>
+                                </h2>
+                                <p className="text-sm font-medium text-slate-400">Student requests awaiting your approval.</p>
+                            </div>
+                            <Link to="/request-letter" className="px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl text-sm font-semibold border border-white/10 transition-colors">
+                                View All
+                            </Link>
+                        </div>
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 relative z-10">
+                            {pendingRequests.slice(0, 4).map(req => (
+                                <div key={req.id} className="bg-slate-900/60 p-5 rounded-2xl border border-white/5 flex flex-col justify-between">
+                                    <div className="mb-4">
+                                        <div className="flex justify-between items-start mb-2">
+                                            <div>
+                                                <h4 className="font-bold text-white text-lg">{req.studentName} <span className="text-sm text-electric-blue ml-1 font-normal">({req.studentId})</span></h4>
+                                                <p className="text-xs text-slate-400 mt-1">{new Date(req.submittedAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</p>
+                                            </div>
+                                            <span className="px-2.5 py-1 rounded bg-amber-500/10 text-amber-500 text-xs font-bold border border-amber-500/20">Pending</span>
+                                        </div>
+                                        <p className="text-slate-200 font-semibold mb-1 text-sm">{req.subject}</p>
+                                        <p className="text-slate-400 text-sm line-clamp-2">{req.body}</p>
+                                    </div>
+                                    <div className="flex justify-end gap-3 border-t border-white/10 pt-4">
+                                        <button onClick={() => handleRejectRequest(req.id)}
+                                            className="px-4 py-2 bg-rose-500/10 text-rose-400 rounded-xl text-xs font-bold border border-rose-500/30 hover:bg-rose-500/20 flex items-center gap-2 transition-all">
+                                            <XCircle size={14} /> Reject
+                                        </button>
+                                        <button onClick={() => handleApproveRequest(req.id)}
+                                            className="px-4 py-2 bg-emerald-500/10 text-emerald-400 rounded-xl text-xs font-bold border border-emerald-500/30 hover:bg-emerald-500/20 flex items-center gap-2 transition-all">
+                                            <CheckCircle size={14} /> Approve
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </motion.div>
+                </div>
+            )}
+
+            {/* Absentees Modal */}
+            <AnimatePresence>
+                {selectedAbsentees && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+                        onClick={() => setSelectedAbsentees(null)}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.9, opacity: 0 }}
+                            className="bg-slate-900 border border-white/10 rounded-2xl shadow-2xl max-w-lg w-full relative overflow-hidden flex flex-col max-h-[80vh]"
+                            onClick={e => e.stopPropagation()}
+                        >
+                            <div className="p-6 border-b border-white/10 flex justify-between items-center bg-slate-800/50">
+                                <div>
+                                    <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                                        <Calendar className="text-electric-blue" size={20} />
+                                        Absentees List
+                                    </h3>
+                                    <p className="text-slate-400 text-sm mt-1">{selectedAbsentees.day}, {new Date(selectedAbsentees.dateStr).toLocaleDateString('en-IN')}</p>
+                                </div>
+                                <button
+                                    onClick={() => setSelectedAbsentees(null)}
+                                    className="p-2 rounded-full bg-white/5 hover:bg-rose-500/20 text-slate-400 hover:text-rose-500 transition-colors"
+                                >
+                                    <X size={20} />
+                                </button>
+                            </div>
+
+                            <div className="p-6 overflow-y-auto custom-scrollbar flex-1">
+                                {selectedAbsentees.absentRecords.length === 0 ? (
+                                    <div className="text-center py-10">
+                                        <div className="w-16 h-16 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-emerald-500/20">
+                                            <CheckCircle className="text-emerald-500" size={32} />
+                                        </div>
+                                        <p className="text-lg font-bold text-white">100% Attendance!</p>
+                                        <p className="text-slate-400 text-sm mt-1">No students were marked absent on this day.</p>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-3">
+                                        {selectedAbsentees.absentRecords.map((record, index) => (
+                                            <div key={index} className="flex justify-between items-center bg-white/5 border border-white/10 p-4 rounded-xl hover:bg-white/10 transition-colors">
+                                                <div className="flex flex-col">
+                                                    <span className="font-bold text-white text-lg">{record.name}</span>
+                                                    <span className="text-electric-blue text-sm font-medium">{record.studentId}</span>
+                                                </div>
+                                                <span className="px-3 py-1 bg-rose-500/10 text-rose-500 border border-rose-500/20 rounded-lg text-xs font-bold">
+                                                    Absent
+                                                </span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="p-4 border-t border-white/10 bg-slate-900 flex justify-between items-center">
+                                <span className="text-slate-400 text-sm font-medium">
+                                    Total Absent: <span className="text-rose-400 font-bold ml-1">{selectedAbsentees.absentRecords.length}</span>
+                                </span>
+                                <span className="text-slate-400 text-sm font-medium">
+                                    Total Present: <span className="text-emerald-400 font-bold ml-1">{students?.length ? students.length - selectedAbsentees.absentRecords.length : 0}</span>
+                                </span>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
             <style jsx>{`
                 .custom-scrollbar::-webkit-scrollbar { width: 6px; }
                 .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }

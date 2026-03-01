@@ -22,6 +22,7 @@ import Fees from './pages/Fees';
 import Timetable from './pages/Timetable';
 import AcademicCalendar from './pages/AcademicCalendar';
 import Notifications from './pages/Notifications';
+import RequestLetter from './pages/RequestLetter';
 
 function App() {
     return (
@@ -52,6 +53,7 @@ function App() {
                         <Route path="/fees" element={<Fees />} />
                         <Route path="/timetable" element={<Timetable />} />
                         <Route path="/academic-calendar" element={<AcademicCalendar />} />
+                        <Route path="/request-letter" element={<RequestLetter />} />
                         <Route path="/students/:rollNo" element={<StudentProfile />} />
                         <Route path="/faculty/:id" element={<FacultyProfile />} />
                     </Route>

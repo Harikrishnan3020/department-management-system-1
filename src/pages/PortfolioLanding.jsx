@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { ArrowRight, Play, Database, Shield, Zap, Layers, Globe } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { AppContext } from '../context/AppContext';
 
 const PortfolioLanding = () => {
     const navigate = useNavigate();
     const { scrollY } = useScroll();
+    const { faculty, students } = useContext(AppContext);
     const y1 = useTransform(scrollY, [0, 1000], [0, 200]);
     const y2 = useTransform(scrollY, [0, 1000], [0, -100]);
     const opacityHero = useTransform(scrollY, [0, 400], [1, 0]);
@@ -13,9 +15,7 @@ const PortfolioLanding = () => {
     return (
         <div className="min-h-screen relative overflow-hidden text-slate-300">
 
-            {/* Dynamic Backgrounds (Parallax) */}
-            <motion.div style={{ y: y1 }} className="absolute -top-40 -left-40 w-[800px] h-[800px] bg-electric-blue/10 rounded-full blur-[150px] mix-blend-screen pointer-events-none" />
-            <motion.div style={{ y: y2 }} className="absolute top-[20%] -right-40 w-[600px] h-[600px] bg-royal-purple/10 rounded-full blur-[120px] mix-blend-screen pointer-events-none" />
+            {/* Dynamic Backgrounds (Parallax) handled by AnimatedBackground component */}
 
             {/* Navigation */}
             <nav className="fixed top-0 w-full z-50 glass-card border-b border-glass-border px-8 py-4 flex items-center justify-between">
@@ -159,9 +159,9 @@ const PortfolioLanding = () => {
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         {[
-                            { name: "Dr. Sarah Jenkins", role: "Head of IT", text: "The new DMS Pro has completely transformed how we handle attendance and faculty management. Truly a masterpiece.", avatar: "https://i.pravatar.cc/150?u=sarah" },
-                            { name: "Michael Chen", role: "Senior Faculty", text: "Coursera integration and Google forms in one place? It saves me hours every week. The interface is incredibly premium.", avatar: "https://i.pravatar.cc/150?u=michael" },
-                            { name: "Emily Rogers", role: "Student Council", text: "Marking attendance with geolocation is so cool! The whole platform feels like something out of a sci-fi movie. I love it.", avatar: "https://i.pravatar.cc/150?u=emily" }
+                            { name: faculty && faculty.length > 0 ? faculty[0].name : "Dr. Sarah Jenkins", role: faculty && faculty.length > 0 ? faculty[0].role : "Head of IT", text: "The new DMS Pro has completely transformed how we handle attendance and faculty management. Truly a masterpiece.", avatar: faculty && faculty.length > 0 ? faculty[0].avatar : "https://i.pravatar.cc/150?u=sarah" },
+                            { name: faculty && faculty.length > 1 ? faculty[1].name : "Michael Chen", role: faculty && faculty.length > 1 ? faculty[1].role : "Senior Faculty", text: "Coursera integration and Google forms in one place? It saves me hours every week. The interface is incredibly premium.", avatar: faculty && faculty.length > 1 ? faculty[1].avatar : "https://i.pravatar.cc/150?u=michael" },
+                            { name: students && students.length > 0 ? students[0].name : "Emily Rogers", role: "Student Council", text: "Marking attendance with geolocation is so cool! The whole platform feels like something out of a sci-fi movie. I love it.", avatar: students && students.length > 0 ? students[0].avatar : "https://i.pravatar.cc/150?u=emily" }
                         ].map((review, i) => (
                             <motion.div
                                 key={i}

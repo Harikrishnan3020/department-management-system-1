@@ -5,6 +5,12 @@ export default {
         "./src/**/*.{js,ts,jsx,tsx}",
     ],
     safelist: [
+        'bg-blue-600/30', 'bg-purple-600/30', 'bg-emerald-500/20',
+        'bg-rose-600/30', 'bg-fuchsia-600/30', 'bg-cyan-500/20',
+        'bg-emerald-600/30', 'bg-teal-600/30', 'bg-lime-500/20',
+        'bg-amber-600/30', 'bg-orange-600/30', 'bg-red-500/20',
+        'bg-cyan-600/30', 'bg-blue-700/30', 'bg-indigo-600/20',
+        'bg-red-700/30', 'bg-violet-600/30', 'bg-fuchsia-500/30', 'bg-pink-500/20',
         'bg-electric-blue/20', 'bg-royal-purple/20', 'bg-emerald-glow/10',
         'bg-rose-500/20', 'bg-fuchsia-600/20', 'bg-cyan-400/10',
         'bg-emerald-glow/20', 'bg-teal-500/20', 'bg-lime-400/10',

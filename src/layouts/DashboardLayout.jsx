@@ -32,6 +32,7 @@ const DashboardLayout = () => {
             { path: '/magazine', label: 'Magazine', icon: FileBadge },
             { path: '/google-form', label: 'Google Forms', icon: LinkIcon },
             { path: '/coursera', label: 'Coursera Hub', icon: MonitorPlay },
+            { path: '/request-letter', label: 'Request Letters', icon: FileText },
             { path: '/fees', label: 'Fees Mgmt', icon: CreditCard },
         ];
     } else if (currentUser.role === 'Student') {
@@ -43,6 +44,7 @@ const DashboardLayout = () => {
             { path: '/exam-result', label: 'Exam Result', icon: FileText },
             { path: '/google-form', label: 'Google Forms', icon: LinkIcon },
             { path: '/coursera', label: 'Coursera Hub', icon: MonitorPlay },
+            { path: '/request-letter', label: 'Request Letter', icon: FileText },
             { path: '/fees', label: 'My Fees', icon: CreditCard },
             { path: '/timetable', label: 'Timetable', icon: CalendarDays },
             { path: '/academic-calendar', label: 'Academic Calendar', icon: CalendarRange },
