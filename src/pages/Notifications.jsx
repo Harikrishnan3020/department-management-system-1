@@ -5,7 +5,7 @@ import { AppContext } from '../context/AppContext';
 import { useNavigate } from 'react-router-dom';
 
 const Notifications = () => {
-    const { currentUser, notifications, setNotifications, setAttendance } = useContext(AppContext);
+    const { currentUser, notifications, setNotifications, setAttendance, setTargetCourseId } = useContext(AppContext);
     const isAuthorized = currentUser?.role === 'Admin' || currentUser?.role === 'Faculty';
     const navigate = useNavigate();
 
@@ -35,6 +35,11 @@ const Notifications = () => {
             navigate('/google-form');
         } else if (type.includes('coursera')) {
             navigate('/coursera');
+        } else if (type.includes('assignment') || type.includes('question bank')) {
+            if (notif.courseId) {
+                setTargetCourseId(notif.courseId);
+            }
+            navigate('/courses');
         } else {
             navigate('/dashboard');
         }
