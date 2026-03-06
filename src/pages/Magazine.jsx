@@ -11,8 +11,9 @@ const Magazine = () => {
 
     const [file, setFile] = useState(null);
     const [templateFile, setTemplateFile] = useState(null);
-    const [templateLink, setTemplateLink] = useState('');
     const [templateType, setTemplateType] = useState('template1');
+    const [title, setTitle] = useState('');
+    const [content, setContent] = useState('');
     const [topic, setTopic] = useState('');
     const [collegeName, setCollegeName] = useState('');
     const [department, setDepartment] = useState('');
@@ -25,32 +26,18 @@ const Magazine = () => {
 
     const handleGenerate = (e) => {
         e.preventDefault();
-        if (!topic || !collegeName || !department || !city || !date) return;
-
-        // Extract a headline from the topic
-        const generatedTitle = topic.split(' ').slice(0, 8).join(' ');
-
-        const generatedContent = `${generatedTitle}
-
-By Student Editor, B.Tech
-${city}, ${new Date(date).toLocaleDateString()}:
-
-The recent focus on ${topic} has brought widespread attention across the ${department} this week. Hosted at the main campus venues of ${collegeName}, this initiative engaged key faculty and enthusiastic students aiming to bridge the gap between theory and practical application. Understanding this subject is crucial now due to the rapid shifts in modern technology and industry demands, making this gathering both timely and highly relevant.
-
-Throughout the central proceedings, participants were introduced to detailed frameworks and immersive scenarios that challenged their existing skill sets. The comprehensive explanation provided by the experts broke down complex topics into digestible components, allowing students to systematically build their proficiency. This rigorous approach ensured that everyone could actively participate and gain substantial knowledge.
-
-A major highlight of the event was the interactive showcase where several standout projects were unveiled. "Seeing such innovative solutions developed in such a short timeframe is nothing short of spectacular," noted one of the judging panel members. These highlights reinforced the positive atmosphere, encouraging participants to step forward and present their ideas gracefully.
-
-The immediate impact of these sessions is evident as students begin integrating these new methodologies into their academic coursework. The primary outcome has been a noticeable increase in collaborative projects and a renewed vigor for research-based learning. Furthermore, several of the prototypes developed during this period are already being refined further.
-
-In conclusion, the success of this initiative has set an inspiring precedent for our college's academic calendar. Future plans involve expanding this single event into a broader festival of innovation, incorporating more diverse fields of study. Our commitment to empowering students through practical experiences continues to be a driving force.`;
+        if (!title.trim() || !content.trim()) return;
 
         const newEntry = {
             id: Date.now(),
-            title: generatedTitle,
-            content: generatedContent,
+            title: title.trim(),
+            content: content.trim(),
+            topic: topic.trim(),
+            collegeName: collegeName.trim(),
+            department: department.trim(),
+            city: city.trim(),
+            articleDate: date,
             image: file ? URL.createObjectURL(file) : 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&q=80',
-            templateLink: templateLink || null,
             templateFile: templateFile ? templateFile.name : null,
             templateType: templateType,
             date: new Date().toLocaleDateString(),
@@ -60,7 +47,8 @@ In conclusion, the success of this initiative has set an inspiring precedent for
         setMagazine(prev => [newEntry, ...prev]);
         setFile(null);
         setTemplateFile(null);
-        setTemplateLink('');
+        setTitle('');
+        setContent('');
         setTopic('');
         setCollegeName('');
         setDepartment('');
@@ -78,8 +66,8 @@ In conclusion, the success of this initiative has set an inspiring precedent for
     };
 
     const downloadArticle = (article) => {
-        const content = `${article.title}\n\nDate: ${article.date}\nAuthor: ${article.author}\n\n${article.content}\n\n${article.templateLink ? `Template Link: ${article.templateLink}` : ''}`;
-        const blob = new Blob([content], { type: 'text/plain' });
+        const contentStr = `${article.title}\nTopic: ${article.topic || 'N/A'}\nCollege: ${article.collegeName || 'N/A'}\nDepartment: ${article.department || 'N/A'}\nCity: ${article.city || 'N/A'}\nEvent Date: ${article.articleDate ? new Date(article.articleDate).toLocaleDateString() : 'N/A'}\n\nGenerated: ${article.date}\nAuthor: ${article.author}\n\n${article.content}`;
+        const blob = new Blob([contentStr], { type: 'text/plain' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
@@ -141,19 +129,6 @@ In conclusion, the success of this initiative has set an inspiring precedent for
 
                         <div className="space-y-2">
                             <label className="text-slate-300 font-semibold flex items-center space-x-2">
-                                <LinkIcon size={18} /> <span>Template Link (Optional)</span>
-                            </label>
-                            <input
-                                type="url"
-                                placeholder="https://canva.com/..."
-                                value={templateLink}
-                                onChange={e => setTemplateLink(e.target.value)}
-                                className="w-full bg-slate-900 border border-white/10 rounded-xl p-3 text-white placeholder-slate-500 font-medium focus:ring-1 focus:ring-luxury-gold/50 focus:border-luxury-gold/50 transition-all outline-none"
-                            />
-                        </div>
-
-                        <div className="space-y-2">
-                            <label className="text-slate-300 font-semibold flex items-center space-x-2">
                                 <Upload size={18} /> <span>Upload Template (Optional)</span>
                             </label>
                             <input
@@ -165,12 +140,17 @@ In conclusion, the success of this initiative has set an inspiring precedent for
                         </div>
 
                         <div className="space-y-4 pt-4 border-t border-white/10">
-                            <h3 className="text-luxury-gold font-bold text-sm tracking-wide uppercase">Article Information</h3>
+                            <h3 className="text-luxury-gold font-bold text-sm tracking-wide uppercase">Article Content</h3>
                             <div className="space-y-2">
-                                <label className="text-slate-300 font-semibold text-xs flex items-center mb-1">Topic</label>
-                                <input required type="text" placeholder="Enter your topic here" className="w-full bg-slate-900 border border-white/10 rounded-xl p-3 text-white placeholder-slate-500 font-medium focus:ring-1 focus:ring-luxury-gold outline-none" value={topic} onChange={e => setTopic(e.target.value)} />
+                                <label className="text-slate-300 font-semibold text-xs flex items-center mb-1">Title</label>
+                                <input required type="text" placeholder="Enter article title" className="w-full bg-slate-900 border border-white/10 rounded-xl p-3 text-white placeholder-slate-500 font-medium focus:ring-1 focus:ring-luxury-gold outline-none" value={title} onChange={e => setTitle(e.target.value)} />
                             </div>
+
                             <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <label className="text-slate-300 font-semibold text-xs flex items-center mb-1">Topic</label>
+                                    <input required type="text" placeholder="Enter your topic here" className="w-full bg-slate-900 border border-white/10 rounded-xl p-3 text-white placeholder-slate-500 font-medium focus:ring-1 focus:ring-luxury-gold outline-none" value={topic} onChange={e => setTopic(e.target.value)} />
+                                </div>
                                 <div className="space-y-2">
                                     <label className="text-slate-300 font-semibold text-xs flex items-center mb-1">College Name</label>
                                     <input required type="text" placeholder="Enter college name" className="w-full bg-slate-900 border border-white/10 rounded-xl p-3 text-white placeholder-slate-500 font-medium focus:ring-1 focus:ring-luxury-gold outline-none" value={collegeName} onChange={e => setCollegeName(e.target.value)} />
@@ -179,22 +159,25 @@ In conclusion, the success of this initiative has set an inspiring precedent for
                                     <label className="text-slate-300 font-semibold text-xs flex items-center mb-1">Department</label>
                                     <input required type="text" placeholder="Enter department name" className="w-full bg-slate-900 border border-white/10 rounded-xl p-3 text-white placeholder-slate-500 font-medium focus:ring-1 focus:ring-luxury-gold outline-none" value={department} onChange={e => setDepartment(e.target.value)} />
                                 </div>
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <label className="text-slate-300 font-semibold text-xs flex items-center mb-1">City</label>
                                     <input required type="text" placeholder="Enter city" className="w-full bg-slate-900 border border-white/10 rounded-xl p-3 text-white placeholder-slate-500 font-medium focus:ring-1 focus:ring-luxury-gold outline-none" value={city} onChange={e => setCity(e.target.value)} />
                                 </div>
-                                <div className="space-y-2">
+                                <div className="space-y-2 col-span-2">
                                     <label className="text-slate-300 font-semibold text-xs flex items-center mb-1">Date</label>
                                     <input required type="date" className="w-full bg-slate-900 border border-white/10 rounded-xl p-3 text-slate-400 font-medium focus:ring-1 focus:ring-luxury-gold outline-none" value={date} onChange={e => setDate(e.target.value)} />
                                 </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-slate-300 font-semibold text-xs flex items-center mb-1">Content</label>
+                                <textarea required rows={5} placeholder="Write your article content here..." className="w-full bg-slate-900 border border-white/10 rounded-xl p-3 text-white placeholder-slate-500 font-medium focus:ring-1 focus:ring-luxury-gold outline-none resize-y" value={content} onChange={e => setContent(e.target.value)} />
                             </div>
                         </div>
 
                         <button type="submit" className="w-full py-4 bg-gradient-to-r from-luxury-gold to-yellow-500 rounded-xl font-black text-slate-900 flex items-center justify-center space-x-2 shadow-glow-gold hover:scale-[1.02] transition-transform">
                             <Upload size={20} />
-                            <span>Generate Article</span>
+                            <span>Publish Article</span>
                         </button>
                     </form>
                 </div>
@@ -243,8 +226,8 @@ In conclusion, the success of this initiative has set an inspiring precedent for
 
                                         {/* Top Image & Title Banner */}
                                         <div className="relative bg-white pt-2.5 px-2.5 pb-8 md:pt-4 md:px-4 md:pb-10 shadow-2xl mb-12 transform -rotate-1 hover:rotate-0 transition-transform duration-500 z-10 w-[95%] mx-auto">
-                                            <div className="relative overflow-hidden w-full aspect-[4/3] max-h-[450px]">
-                                                <img src={article.image} alt={article.title} className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-[2000ms]" />
+                                            <div className="relative overflow-hidden w-full flex justify-center items-center">
+                                                <img src={article.image} alt={article.title} className="w-full h-auto max-h-[700px] object-contain md:object-cover transform hover:scale-105 transition-transform duration-[2000ms]" />
                                             </div>
 
                                             {/* Stylized Floating Title Wrapper */}
@@ -264,24 +247,26 @@ In conclusion, the success of this initiative has set an inspiring precedent for
                                                 style={{ fontFamily: '"Playfair Display", serif', fontSize: '1.1rem', lineHeight: '1.8' }}
                                             />
                                         ) : (
-                                            <div className="text-[#d8eff5] space-y-6 px-4 md:px-10 relative z-10" style={{ fontFamily: '"Playfair Display", serif', fontSize: '0.95rem', lineHeight: '1.9', textAlign: 'justify' }}>
-                                                {article.content.split('\n').map((para, i) => {
-                                                    if (!para.trim()) return null;
-                                                    return (
-                                                        <p key={i}>
-                                                            {para}
-                                                        </p>
-                                                    );
-                                                })}
+                                            <div className="px-4 md:px-10 relative z-10 text-[#d8eff5]">
+                                                {(article.topic || article.collegeName || article.department || article.city || article.articleDate) && (
+                                                    <div className="flex flex-wrap gap-y-2 gap-x-6 text-sm mb-6 pb-6 border-b border-[#d8eff5]/20 opacity-90" style={{ fontFamily: '"Playfair Display", serif' }}>
+                                                        {article.topic && <div><strong className="text-white">Topic:</strong> {article.topic}</div>}
+                                                        {article.collegeName && <div><strong className="text-white">College:</strong> {article.collegeName}</div>}
+                                                        {article.department && <div><strong className="text-white">Department:</strong> {article.department}</div>}
+                                                        {article.city && <div><strong className="text-white">City:</strong> {article.city}</div>}
+                                                        {article.articleDate && <div><strong className="text-white">Date:</strong> {new Date(article.articleDate).toLocaleDateString()}</div>}
+                                                    </div>
+                                                )}
+                                                <div className="space-y-6" style={{ fontFamily: '"Playfair Display", serif', fontSize: '0.95rem', lineHeight: '1.9', textAlign: 'justify' }}>
+                                                    {article.content.split('\n').map((para, i) => {
+                                                        if (!para.trim()) return null;
+                                                        return <p key={i}>{para}</p>;
+                                                    })}
+                                                </div>
                                             </div>
                                         )}
 
                                         <div className="mt-auto pt-10 px-4 md:px-10 flex flex-wrap gap-2 relative z-10">
-                                            {article.templateLink && (
-                                                <a href={article.templateLink} target="_blank" rel="noopener noreferrer" className="px-4 py-1.5 bg-[#0d3440]/80 text-[#d8eff5] rounded font-bold text-xs flex items-center space-x-2 hover:bg-[#0d3440] transition-colors shadow-lg">
-                                                    <LinkIcon size={14} /> <span>External Link Attached</span>
-                                                </a>
-                                            )}
                                             {article.templateFile && (
                                                 <span className="px-4 py-1.5 bg-white/20 text-white rounded font-bold text-xs flex items-center space-x-2 shadow-lg backdrop-blur-sm">
                                                     <FileBadge size={14} /> <span>{article.templateFile}</span>

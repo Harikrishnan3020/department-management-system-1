@@ -4,7 +4,7 @@ import { Send, FileText, CheckCircle, XCircle, Eye, X } from 'lucide-react';
 import { AppContext } from '../../context/AppContext';
 
 // ── Full Letter Preview Modal ─────────────────────────────────────────────────
-const LetterModal = ({ letter, onClose }) => (
+export const LetterModal = ({ letter, onClose }) => (
     <AnimatePresence>
         {letter && (
             <motion.div
@@ -36,8 +36,16 @@ const LetterModal = ({ letter, onClose }) => (
     </AnimatePresence>
 );
 
+// Safe date formatter to avoid RangeError: Invalid time value crashes
+const safeFormatDate = (dateString, options) => {
+    if (!dateString) return 'N/A';
+    const d = new Date(dateString);
+    if (isNaN(d.getTime())) return 'N/A';
+    return options ? d.toLocaleDateString('en-IN', options) : d.toLocaleDateString('en-IN');
+};
+
 // ── Reusable Letter Body (used in both form & modal) ─────────────────────────
-const LetterBody = ({ letter, editMode, body, setBody, subject, setSubject, date, setDate, signature, setSignature }) => {
+export const LetterBody = ({ letter, editMode, body, setBody, subject, setSubject, date, setDate, signature, setSignature }) => {
     const today = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' });
 
     return (
@@ -125,7 +133,7 @@ const LetterBody = ({ letter, editMode, body, setBody, subject, setSubject, date
                             required
                         />
                     ) : (
-                        <span className="ml-1">{letter?.date ? new Date(letter.date).toLocaleDateString('en-IN') : (letter ? new Date(letter.submittedAt).toLocaleDateString('en-IN') : today)}</span>
+                        <span className="ml-1">{letter?.date ? safeFormatDate(letter.date) : (letter ? safeFormatDate(letter.submittedAt) : today)}</span>
                     )}
                 </div>
                 <div className="w-1/2 p-3">
@@ -255,9 +263,10 @@ const RequestLetter = () => {
         alert('Request rejected.');
     };
 
-    const myRequests = requestLetters.filter(r => r.studentId === currentUser?.id);
-    const pendingRequests = requestLetters.filter(r => r.status === 'Pending');
-    const processedRequests = requestLetters.filter(r => r.status !== 'Pending');
+    const safeRequestLetters = requestLetters || [];
+    const myRequests = safeRequestLetters.filter(r => r.studentId === currentUser?.id);
+    const pendingRequests = safeRequestLetters.filter(r => r.status === 'Pending');
+    const processedRequests = safeRequestLetters.filter(r => r.status !== 'Pending');
 
     return (
         <div className="space-y-6">
@@ -274,67 +283,69 @@ const RequestLetter = () => {
 
             {/* ── STUDENT: Compose ── */}
             {isStudent && (
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-                    className="glass-card rounded-[2rem] border border-glass-border shadow-glass-card p-6 md:p-10 relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-electric-blue/5 blur-[80px] rounded-full pointer-events-none" />
+                <div className="space-y-6">
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+                        className="glass-card rounded-[2rem] border border-glass-border shadow-glass-card p-6 md:p-10 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-electric-blue/5 blur-[80px] rounded-full pointer-events-none" />
 
-                    <h2 className="text-2xl font-bold text-white mb-6 border-b border-white/10 pb-4">Compose Letter</h2>
+                        <h2 className="text-2xl font-bold text-white mb-6 border-b border-white/10 pb-4">Compose Letter</h2>
 
-                    <form onSubmit={handleSubmit}>
-                        {/* White letter paper */}
-                        <div className="bg-white shadow-xl rounded">
-                            <LetterBody
-                                editMode={{ studentName: currentUser.name, studentId: currentUser.id }}
-                                body={body}
-                                setBody={setBody}
-                                subject={subject}
-                                setSubject={setSubject}
-                                date={date}
-                                setDate={setDate}
-                                signature={signature}
-                                setSignature={setSignature}
-                            />
-                        </div>
-
-                        <div className="flex justify-end mt-6">
-                            <button type="submit"
-                                className="bg-electric-blue hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-xl transition-all shadow-glow-blue flex items-center space-x-2">
-                                <Send size={18} />
-                                <span>Submit Letter</span>
-                            </button>
-                        </div>
-                    </form>
-
-                    {/* My past submissions */}
-                    {myRequests.length > 0 && (
-                        <div className="mt-12">
-                            <h3 className="text-xl font-bold text-white mb-6 border-b border-white/10 pb-4">My Submitted Letters</h3>
-                            <div className="space-y-4">
-                                {myRequests.map(req => (
-                                    <div key={req.id} className="bg-slate-800/40 p-5 rounded-xl border border-white/5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                                        <div className="flex-1 min-w-0">
-                                            <p className="text-xs text-slate-500 mb-1">
-                                                {new Date(req.submittedAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
-                                            </p>
-                                            <p className="font-semibold text-white mb-1">{req.subject}</p>
-                                            <p className="text-slate-300 text-sm line-clamp-2">{req.body}</p>
-                                        </div>
-                                        <div className="flex items-center gap-3 shrink-0">
-                                            <button onClick={() => setPreviewLetter(req)}
-                                                className="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-slate-400 hover:text-white text-xs font-medium flex items-center gap-1.5 transition-all">
-                                                <Eye size={13} /> View Full Letter
-                                            </button>
-                                            <span className={`px-3 py-1.5 rounded-lg font-bold text-xs border ${req.status === 'Approved' ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' :
-                                                req.status === 'Rejected' ? 'bg-rose-500/20 text-rose-400 border-rose-500/30' :
-                                                    'bg-amber-500/20 text-amber-400 border-amber-500/30'
-                                                }`}>{req.status}</span>
-                                        </div>
-                                    </div>
-                                ))}
+                        <form onSubmit={handleSubmit}>
+                            {/* White letter paper */}
+                            <div className="bg-white shadow-xl rounded">
+                                <LetterBody
+                                    editMode={{ studentName: currentUser.name, studentId: currentUser.id }}
+                                    body={body}
+                                    setBody={setBody}
+                                    subject={subject}
+                                    setSubject={setSubject}
+                                    date={date}
+                                    setDate={setDate}
+                                    signature={signature}
+                                    setSignature={setSignature}
+                                />
                             </div>
-                        </div>
-                    )}
-                </motion.div>
+
+                            <div className="flex justify-end mt-6">
+                                <button type="submit"
+                                    className="bg-electric-blue hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-xl transition-all shadow-glow-blue flex items-center space-x-2">
+                                    <Send size={18} />
+                                    <span>Submit Letter</span>
+                                </button>
+                            </div>
+                        </form>
+
+                        {/* My past submissions */}
+                        {myRequests.length > 0 && (
+                            <div className="mt-12">
+                                <h3 className="text-xl font-bold text-white mb-6 border-b border-white/10 pb-4">My Submitted Letters</h3>
+                                <div className="space-y-4">
+                                    {myRequests.map(req => (
+                                        <div key={req.id} className="bg-slate-800/40 p-5 rounded-xl border border-white/5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-xs text-slate-500 mb-1">
+                                                    {safeFormatDate(req.submittedAt, { day: '2-digit', month: 'short', year: 'numeric' })}
+                                                </p>
+                                                <p className="font-semibold text-white mb-1">{req.subject}</p>
+                                                <p className="text-slate-300 text-sm line-clamp-2">{req.body}</p>
+                                            </div>
+                                            <div className="flex items-center gap-3 shrink-0">
+                                                <button onClick={() => setPreviewLetter(req)}
+                                                    className="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-slate-400 hover:text-white text-xs font-medium flex items-center gap-1.5 transition-all">
+                                                    <Eye size={13} /> View Full Letter
+                                                </button>
+                                                <span className={`px-3 py-1.5 rounded-lg font-bold text-xs border ${req.status === 'Approved' ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' :
+                                                    req.status === 'Rejected' ? 'bg-rose-500/20 text-rose-400 border-rose-500/30' :
+                                                        'bg-amber-500/20 text-amber-400 border-amber-500/30'
+                                                    }`}>{req.status}</span>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </motion.div>
+                </div>
             )}
 
             {/* ── ADMIN / FACULTY: Review ── */}
@@ -366,7 +377,7 @@ const RequestLetter = () => {
                                             <p className="mt-1 font-semibold text-slate-200">{req.subject}</p>
                                         </div>
                                         <span className="text-xs text-slate-400">
-                                            Submitted: {new Date(req.submittedAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                                            Submitted: {safeFormatDate(req.submittedAt, { day: '2-digit', month: 'short', year: 'numeric' })}
                                         </span>
                                     </div>
 
@@ -402,7 +413,7 @@ const RequestLetter = () => {
                                             <span className="font-bold text-white">{req.studentName}</span>
                                             <span className="text-slate-400 text-sm ml-2">({req.studentId})</span>
                                             <p className="mt-0.5 font-medium text-slate-300 text-sm">{req.subject}</p>
-                                            <p className="text-xs text-slate-500 mt-1">{new Date(req.submittedAt).toLocaleDateString('en-IN')}</p>
+                                            <p className="text-xs text-slate-500 mt-1">{safeFormatDate(req.submittedAt)}</p>
                                         </div>
                                         <div className="flex items-center gap-3">
                                             <button onClick={() => setPreviewLetter(req)}

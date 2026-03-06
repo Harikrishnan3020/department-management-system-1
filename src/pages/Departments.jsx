@@ -95,7 +95,7 @@ const Departments = () => {
                 </button>
             </div>
 
-            <div className="glass-card rounded-[2rem] border border-glass-border overflow-hidden shadow-glass-card custom-scrollbar">
+            <div className="glass-card rounded-[2rem] border border-glass-border shadow-glass-card overflow-x-auto custom-scrollbar">
                 <table className="w-full text-left border-collapse min-w-max">
                     <thead>
                         <tr className="border-b border-white/10 text-slate-400 text-sm tracking-wider uppercase bg-slate-950/50 backdrop-blur-md">

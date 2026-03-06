@@ -128,17 +128,12 @@ export const AppProvider = ({ children }) => {
     ];
 
     const [departments, setDepartments] = useState(() => {
+        const isSeeded = localStorage.getItem('dms_courses_faculty_seeded_v1');
         const saved = JSON.parse(localStorage.getItem('departments'));
-        if (!saved || saved.length === 0) return defaultDepartments;
-
-        // Ensure default core departments exist
-        const merged = [...saved];
-        defaultDepartments.forEach(defDept => {
-            if (!merged.find(d => d.id === defDept.id)) {
-                merged.push(defDept);
-            }
-        });
-        return merged;
+        if (!isSeeded) return defaultDepartments;
+        // Strict preservation: if seeded, whatever is in saved gets used.
+        // If the user deleted all items, saved is [], and we SHOULD return [] so it stays deleted.
+        return saved !== null ? saved : defaultDepartments;
     });
     const defaultCourses = [
         { id: 'C1', code: '24UMA463', name: 'Operations Research', type: 'Theory', credits: 4, faculty: 'Dr CHELLAPRIYA K', desc: 'Category: Theory | Hours: 7 | Abbreviation: OR', outcome: 'Understanding Operations Research' },

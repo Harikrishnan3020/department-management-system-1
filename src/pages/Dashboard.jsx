@@ -1,9 +1,10 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { motion } from 'framer-motion';
-import { Building2, Users, GraduationCap, BookOpen, TrendingUp, Activity, Bell, FileText, CheckCircle, XCircle, X, Calendar } from 'lucide-react';
+import { Building2, Users, GraduationCap, BookOpen, TrendingUp, Activity, Bell, FileText, CheckCircle, XCircle, X, Calendar, Eye, FileBadge } from 'lucide-react';
 import { AppContext } from '../context/AppContext';
 import { Link } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
+import { LetterModal } from './RequestLetter/index.jsx';
 
 const CountUp = ({ to, duration = 2 }) => {
     const [count, setCount] = useState(0);
@@ -36,8 +37,10 @@ const Dashboard = () => {
     const { currentUser, notifications, setNotifications, attendance, requestLetters, setRequestLetters, students, departments, faculty, courses } = useContext(AppContext);
     const isAuthorized = currentUser?.role === 'Admin' || currentUser?.role === 'Faculty';
     const [selectedAbsentees, setSelectedAbsentees] = useState(null);
+    const [previewLetter, setPreviewLetter] = useState(null);
 
     const pendingRequests = requestLetters?.filter(r => r.status === 'Pending') || [];
+    const uploadedCertificates = attendance?.filter(a => a.certificateUploaded === true && a.status?.includes('OD')) || [];
 
     const handleApproveRequest = (id) => {
         setRequestLetters(prev => prev.map(r => r.id === id ? { ...r, status: 'Approved' } : r));
@@ -74,12 +77,15 @@ const Dashboard = () => {
 
         now.setHours(23, 59, 59, 999);
 
+        const currentHour = now.getHours();
+        const todayStrLocal = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+
         const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
         return dayNames.map((name, i) => {
             const d = new Date(start);
             d.setDate(start.getDate() + i);
 
-            const isFuture = d > now;
+            const isFuture = d > now && d.toISOString().split('T')[0] !== todayStrLocal;
 
             if (isFuture) {
                 return {
@@ -91,14 +97,47 @@ const Dashboard = () => {
                 };
             }
 
-            // format to local string specifically to avoid timezone shifts
             const dateStr = new Date(d.getTime() - (d.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
 
-            const presentCount = attendance?.filter(a => a.date === dateStr && (a.status === 'Present' || a.status === 'OD Approved')).length || 0;
-            const absentRecords = attendance?.filter(a => a.date === dateStr && a.status === 'Absent') || [];
+            let presentCountForDay = 0;
+            const absentRecords = [];
 
-            const totalStudents = students?.length || 1; // avoid div by 0
-            let percentage = Math.round((presentCount / totalStudents) * 100);
+            (students || []).forEach(student => {
+                const morningRecord = attendance?.find(a => a.studentId === student.rollNo && a.date === dateStr && (!a.session || a.session === 'Morning'));
+                const afternoonRecord = attendance?.find(a => a.studentId === student.rollNo && a.date === dateStr && a.session === 'Afternoon');
+
+                const getActualStatus = (record, session) => {
+                    if (record && record.status) return record.status;
+                    let targetHours = session === 'Morning' ? 9 : 13;
+                    if (dateStr < todayStrLocal || (dateStr === todayStrLocal && currentHour >= targetHours)) {
+                        return 'Absent (Auto)';
+                    }
+                    return 'Unmarked';
+                };
+
+                const morningStatus = getActualStatus(morningRecord, 'Morning');
+                const afternoonStatus = getActualStatus(afternoonRecord, 'Afternoon');
+
+                const isAbsentMorning = morningStatus.includes('Absent');
+                const isAbsentAfternoon = afternoonStatus.includes('Absent');
+
+                if (isAbsentMorning || isAbsentAfternoon) {
+                    let sessions = [];
+                    if (isAbsentMorning) sessions.push('Morning');
+                    if (isAbsentAfternoon) sessions.push('Afternoon');
+
+                    absentRecords.push({
+                        name: student.name,
+                        studentId: student.rollNo,
+                        session: sessions.join(' & ')
+                    });
+                } else if ((morningStatus.includes('Present') || morningStatus.includes('OD')) && (afternoonStatus.includes('Present') || afternoonStatus.includes('OD') || afternoonStatus === 'Unmarked')) {
+                    presentCountForDay += 1;
+                }
+            });
+
+            const totalStudents = students?.length || 1;
+            let percentage = Math.round((presentCountForDay / totalStudents) * 100);
             if (percentage > 100) percentage = 100;
 
             return {
@@ -229,6 +268,10 @@ const Dashboard = () => {
                                         </div>
                                         <p className="text-slate-200 font-semibold mb-1 text-sm">{req.subject}</p>
                                         <p className="text-slate-400 text-sm line-clamp-2">{req.body}</p>
+                                        <button onClick={() => setPreviewLetter(req)}
+                                            className="px-3 py-1.5 mt-3 rounded-lg bg-white/5 border border-white/10 text-slate-400 hover:text-white text-xs font-medium flex items-center gap-1.5 transition-all w-fit">
+                                            <Eye size={13} /> View Full Letter
+                                        </button>
                                     </div>
                                     <div className="flex justify-end gap-3 border-t border-white/10 pt-4">
                                         <button onClick={() => handleRejectRequest(req.id)}
@@ -240,6 +283,46 @@ const Dashboard = () => {
                                             <CheckCircle size={14} /> Approve
                                         </button>
                                     </div>
+                                </div>
+                            ))}
+                        </div>
+                    </motion.div>
+                </div>
+            )}
+
+            {/* Dashboard Uploaded OD Certificates Section */}
+            {isAuthorized && uploadedCertificates.length > 0 && (
+                <div className="w-full">
+                    <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="w-full glass-card rounded-[2rem] border border-glass-border shadow-glass-card p-8 flex flex-col relative overflow-hidden">
+                        <div className="flex justify-between items-center mb-6 relative z-10">
+                            <div>
+                                <h2 className="text-2xl font-bold text-white mb-1 flex items-center gap-3">
+                                    <FileBadge className="text-emerald-400" size={24} />
+                                    Recently Uploaded OD Certificates
+                                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-sm font-bold">
+                                        {uploadedCertificates.length}
+                                    </span>
+                                </h2>
+                                <p className="text-sm font-medium text-slate-400">Students who have uploaded their physical proofs.</p>
+                            </div>
+                            <Link to="/attendance" className="px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl text-sm font-semibold border border-white/10 transition-colors">
+                                View Attendance
+                            </Link>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 relative z-10">
+                            {uploadedCertificates.slice(0, 6).map(cert => (
+                                <div key={cert.id} className="bg-slate-900/60 p-4 rounded-xl border border-white/5 flex flex-col gap-2">
+                                    <div className="flex justify-between items-start">
+                                        <div>
+                                            <h4 className="font-bold text-white tracking-wide">{cert.name}</h4>
+                                            <span className="text-xs text-electric-blue font-medium">{cert.studentId}</span>
+                                        </div>
+                                        <button onClick={() => alert(`Certificate explicitly verified for ${cert.name}.`)} className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 transition-colors tooltip-trigger" title="View Certificate">
+                                            <Eye size={16} />
+                                        </button>
+                                    </div>
+                                    <p className="text-xs text-slate-400 mt-2">Dates: <span className="text-slate-300 font-bold">{cert.start} to {cert.end}</span></p>
+                                    <p className="text-xs text-slate-400 line-clamp-1">Subject: <span className="text-slate-300">{cert.reason || 'N/A'}</span></p>
                                 </div>
                             ))}
                         </div>
@@ -297,9 +380,12 @@ const Dashboard = () => {
                                                     <span className="font-bold text-white text-lg">{record.name}</span>
                                                     <span className="text-electric-blue text-sm font-medium">{record.studentId}</span>
                                                 </div>
-                                                <span className="px-3 py-1 bg-rose-500/10 text-rose-500 border border-rose-500/20 rounded-lg text-xs font-bold">
-                                                    Absent
-                                                </span>
+                                                <div className="flex flex-col items-end">
+                                                    <span className="px-3 py-1 bg-rose-500/10 text-rose-500 border border-rose-500/20 rounded-lg text-xs font-bold mb-1">
+                                                        Absent
+                                                    </span>
+                                                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">{record.session}</span>
+                                                </div>
                                             </div>
                                         ))}
                                     </div>
@@ -318,6 +404,9 @@ const Dashboard = () => {
                     </motion.div>
                 )}
             </AnimatePresence>
+
+            {/* Letter Preview Modal */}
+            <LetterModal letter={previewLetter} onClose={() => setPreviewLetter(null)} />
 
             <style jsx>{`
                 .custom-scrollbar::-webkit-scrollbar { width: 6px; }

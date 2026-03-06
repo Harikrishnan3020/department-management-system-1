@@ -88,6 +88,9 @@ const DashboardLayout = () => {
                             if (item.path === '/google-form') hasNotification = notifications.some(n => n.type === 'Google Form');
                             else if (item.path === '/coursera') hasNotification = notifications.some(n => n.type === 'Coursera Assignment');
                             else if (item.path === '/fees') hasNotification = notifications.some(n => n.type === 'Fee Assigned');
+                        } else {
+                            if (item.path === '/attendance') hasNotification = notifications.some(n => n.type.includes('OD Request'));
+                            else if (item.path === '/request-letter') hasNotification = notifications.some(n => n.type.includes('Leave Request'));
                         }
 
                         return (
@@ -184,7 +187,7 @@ const DashboardLayout = () => {
                             className="relative p-2 text-slate-300 flex items-center hover:text-white transition cursor-pointer"
                         >
                             <Bell size={22} />
-                            {notifications && notifications.length > 0 && (
+                            {notifications?.length > 0 && (
                                 <span className="absolute top-1 right-1.5 w-2 h-2 bg-rose-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(244,63,94,0.8)]"></span>
                             )}
                         </button>
