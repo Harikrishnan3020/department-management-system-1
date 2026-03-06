@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import { motion } from 'framer-motion';
 import { Building2, Users, GraduationCap, BookOpen, TrendingUp, Activity, Bell, FileText, CheckCircle, XCircle, X, Calendar, Eye, FileBadge } from 'lucide-react';
 import { AppContext } from '../context/AppContext';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { LetterModal } from './RequestLetter/index.jsx';
 
@@ -34,7 +34,8 @@ const CountUp = ({ to, duration = 2 }) => {
 };
 
 const Dashboard = () => {
-    const { currentUser, notifications, setNotifications, attendance, requestLetters, setRequestLetters, students, departments, faculty, courses } = useContext(AppContext);
+    const navigate = useNavigate();
+    const { currentUser, notifications, setNotifications, attendance, requestLetters, setRequestLetters, students, departments, faculty, courses, setTargetCourseId } = useContext(AppContext);
     const isAuthorized = currentUser?.role === 'Admin' || currentUser?.role === 'Faculty';
     const [selectedAbsentees, setSelectedAbsentees] = useState(null);
     const [previewLetter, setPreviewLetter] = useState(null);
@@ -155,6 +156,9 @@ const Dashboard = () => {
     const containerVariants = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.1 } } };
     const itemVariants = { hidden: { y: 20, opacity: 0 }, show: { y: 0, opacity: 1, transition: { type: "spring", stiffness: 300 } } };
 
+    const attendanceNotifications = notifications?.filter(n => n.type === 'Attendance Published') || [];
+    const assignmentNotifications = notifications?.filter(n => n.type === 'Assignment') || [];
+
     return (
         <div className="space-y-8">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
@@ -169,6 +173,87 @@ const Dashboard = () => {
                     </button>
                 </motion.div>
             </div>
+
+            {/* Student Assignment Notification Banner */}
+            {!isAuthorized && assignmentNotifications.length > 0 && (
+                <motion.div
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="p-1 rounded-[2rem] bg-gradient-to-r from-emerald-glow via-electric-blue to-royal-purple shadow-glow-emerald/20"
+                >
+                    <div className="bg-slate-900/90 backdrop-blur-xl rounded-[1.9rem] p-6 flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden relative">
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-glow/10 blur-[80px] rounded-full -mr-20 -mt-20"></div>
+                        <div className="flex items-center space-x-5 relative z-10">
+                            <div className="w-16 h-16 rounded-2xl bg-emerald-glow/20 flex items-center justify-center text-emerald-glow border border-emerald-glow/30 shadow-glow-emerald animate-pulse">
+                                <BookOpen size={32} />
+                            </div>
+                            <div>
+                                <h3 className="text-xl font-black text-white tracking-tight uppercase">New Assignment Assigned</h3>
+                                <p className="text-slate-400 font-medium text-sm mt-1">{assignmentNotifications[0].message}</p>
+                            </div>
+                        </div>
+                        <div className="flex items-center space-x-4 relative z-10 w-full md:w-auto">
+                            <button
+                                onClick={() => {
+                                    setNotifications(prev => prev.filter(n => n.id !== assignmentNotifications[0].id));
+                                }}
+                                className="flex-1 md:flex-none px-6 py-3 bg-white/5 hover:bg-white/10 text-slate-400 font-bold rounded-xl border border-white/10 transition-all"
+                            >
+                                Dismiss
+                            </button>
+                            <button
+                                onClick={() => {
+                                    if (assignmentNotifications[0].courseId) {
+                                        setTargetCourseId(assignmentNotifications[0].courseId);
+                                    }
+                                    navigate('/courses');
+                                }}
+                                className="flex-1 md:flex-none px-8 py-3 bg-emerald-glow text-slate-900 font-black rounded-xl shadow-glow-emerald hover:scale-105 transition-all text-center"
+                            >
+                                SUBMIT NOW
+                            </button>
+                        </div>
+                    </div>
+                </motion.div>
+            )}
+
+            {/* Student Notification Banner */}
+            {!isAuthorized && attendanceNotifications.length > 0 && (
+                <motion.div
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="p-1 rounded-[2rem] bg-gradient-to-r from-electric-blue via-royal-purple to-emerald-glow shadow-glow-blue/20"
+                >
+                    <div className="bg-slate-900/90 backdrop-blur-xl rounded-[1.9rem] p-6 flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden relative">
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-electric-blue/10 blur-[80px] rounded-full -mr-20 -mt-20"></div>
+                        <div className="flex items-center space-x-5 relative z-10">
+                            <div className="w-16 h-16 rounded-2xl bg-electric-blue/20 flex items-center justify-center text-electric-blue border border-electric-blue/30 shadow-glow-blue animate-pulse">
+                                <Bell size={32} />
+                            </div>
+                            <div>
+                                <h3 className="text-xl font-black text-white tracking-tight uppercase">New Attendance Published</h3>
+                                <p className="text-slate-400 font-medium text-sm mt-1">{attendanceNotifications[0].message}</p>
+                            </div>
+                        </div>
+                        <div className="flex items-center space-x-4 relative z-10 w-full md:w-auto">
+                            <button
+                                onClick={() => {
+                                    setNotifications(prev => prev.filter(n => n.id !== attendanceNotifications[0].id));
+                                }}
+                                className="flex-1 md:flex-none px-6 py-3 bg-white/5 hover:bg-white/10 text-slate-400 font-bold rounded-xl border border-white/10 transition-all"
+                            >
+                                Dismiss
+                            </button>
+                            <Link
+                                to="/attendance"
+                                className="flex-1 md:flex-none px-8 py-3 bg-electric-blue text-white font-black rounded-xl shadow-glow-blue hover:scale-105 transition-all text-center"
+                            >
+                                CHECK STATUS
+                            </Link>
+                        </div>
+                    </div>
+                </motion.div>
+            )}
 
             <motion.div variants={containerVariants} initial="hidden" animate="show" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {stats.map((stat, index) => {
