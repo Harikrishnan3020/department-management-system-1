@@ -186,6 +186,9 @@ export const AppProvider = ({ children }) => {
     const [courseraLinks, setCourseraLinks] = useState(() => JSON.parse(localStorage.getItem('courseraLinks')) || []);
     const [fees, setFees] = useState(() => JSON.parse(localStorage.getItem('fees')) || []);
     const [requestLetters, setRequestLetters] = useState(() => JSON.parse(localStorage.getItem('requestLetters')) || []);
+    const [targetCourseId, setTargetCourseId] = useState(null);
+    const [assignments, setAssignments] = useState(() => JSON.parse(localStorage.getItem('assignments')) || []);
+    const [assignmentSubmissions, setAssignmentSubmissions] = useState(() => JSON.parse(localStorage.getItem('assignmentSubmissions')) || []);
 
     useEffect(() => {
         localStorage.setItem('dms_courses_faculty_seeded_v1', 'true');
@@ -202,7 +205,9 @@ export const AppProvider = ({ children }) => {
         localStorage.setItem('courseraLinks', JSON.stringify(courseraLinks));
         localStorage.setItem('fees', JSON.stringify(fees));
         localStorage.setItem('requestLetters', JSON.stringify(requestLetters));
-    }, [currentUser, departments, students, courses, faculty, attendance, examResults, notifications, magazine, googleForms, courseraLinks, fees, requestLetters]);
+        localStorage.setItem('assignments', JSON.stringify(assignments));
+        localStorage.setItem('assignmentSubmissions', JSON.stringify(assignmentSubmissions));
+    }, [currentUser, departments, students, courses, faculty, attendance, examResults, notifications, magazine, googleForms, courseraLinks, fees, requestLetters, assignments, assignmentSubmissions]);
 
     const login = (role, id, name) => {
         setCurrentUser({ role, id, name });
@@ -226,7 +231,10 @@ export const AppProvider = ({ children }) => {
             googleForms, setGoogleForms,
             courseraLinks, setCourseraLinks,
             fees, setFees,
-            requestLetters, setRequestLetters
+            requestLetters, setRequestLetters,
+            targetCourseId, setTargetCourseId,
+            assignments, setAssignments,
+            assignmentSubmissions, setAssignmentSubmissions
         }}>
             {children}
         </AppContext.Provider>
