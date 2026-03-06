@@ -189,6 +189,12 @@ export const AppProvider = ({ children }) => {
     const [targetCourseId, setTargetCourseId] = useState(null);
     const [assignments, setAssignments] = useState(() => JSON.parse(localStorage.getItem('assignments')) || []);
     const [assignmentSubmissions, setAssignmentSubmissions] = useState(() => JSON.parse(localStorage.getItem('assignmentSubmissions')) || []);
+    const [calendarEvents, setCalendarEvents] = useState(() => JSON.parse(localStorage.getItem('calendarEvents')) || [
+        { id: 1, title: 'AI Guest Lecture', date: new Date(new Date().setDate(new Date().getDate() + 2)).toISOString().split('T')[0], type: 'Seminar', color: 'electric-blue' },
+        { id: 2, title: 'Project Review', date: new Date(new Date().setDate(new Date().getDate() + 5)).toISOString().split('T')[0], type: 'Lab', color: 'emerald-glow' },
+        { id: 3, title: 'Cultural Fest', date: new Date(new Date().setDate(new Date().getDate() + 10)).toISOString().split('T')[0], type: 'Event', color: 'royal-purple' },
+        { id: 4, title: 'Mid-term Prep', date: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().split('T')[0], type: 'Lecture', color: 'luxury-gold' },
+    ]);
 
     useEffect(() => {
         localStorage.setItem('dms_courses_faculty_seeded_v1', 'true');
@@ -207,7 +213,8 @@ export const AppProvider = ({ children }) => {
         localStorage.setItem('requestLetters', JSON.stringify(requestLetters));
         localStorage.setItem('assignments', JSON.stringify(assignments));
         localStorage.setItem('assignmentSubmissions', JSON.stringify(assignmentSubmissions));
-    }, [currentUser, departments, students, courses, faculty, attendance, examResults, notifications, magazine, googleForms, courseraLinks, fees, requestLetters, assignments, assignmentSubmissions]);
+        localStorage.setItem('calendarEvents', JSON.stringify(calendarEvents));
+    }, [currentUser, departments, students, courses, faculty, attendance, examResults, notifications, magazine, googleForms, courseraLinks, fees, requestLetters, assignments, assignmentSubmissions, calendarEvents]);
 
     const login = (role, id, name) => {
         setCurrentUser({ role, id, name });
@@ -234,7 +241,8 @@ export const AppProvider = ({ children }) => {
             requestLetters, setRequestLetters,
             targetCourseId, setTargetCourseId,
             assignments, setAssignments,
-            assignmentSubmissions, setAssignmentSubmissions
+            assignmentSubmissions, setAssignmentSubmissions,
+            calendarEvents, setCalendarEvents
         }}>
             {children}
         </AppContext.Provider>

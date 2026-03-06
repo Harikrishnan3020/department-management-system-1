@@ -33,9 +33,51 @@ const CountUp = ({ to, duration = 2 }) => {
     return <span>{count.toLocaleString()}</span>;
 };
 
+const CountdownTimer = ({ deadline }) => {
+    const [timeLeft, setTimeLeft] = useState('');
+    const [isUrgent, setIsUrgent] = useState(false);
+
+    useEffect(() => {
+        const calculateTime = () => {
+            const now = new Date();
+            const target = new Date(deadline);
+            const diff = target - now;
+
+            if (diff <= 0) {
+                setTimeLeft('Deadline Passed');
+                setIsUrgent(false);
+                return;
+            }
+
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+            const minutes = Math.floor((diff / (1000 * 60)) % 60);
+
+            if (days === 0 && hours < 24) {
+                setIsUrgent(true);
+                setTimeLeft(`${hours}h ${minutes}m left`);
+            } else {
+                setIsUrgent(false);
+                setTimeLeft(`${days}d ${hours}h left`);
+            }
+        };
+
+        calculateTime();
+        const timer = setInterval(calculateTime, 60000);
+        return () => clearInterval(timer);
+    }, [deadline]);
+
+    return (
+        <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold border transition-all ${isUrgent ? 'bg-rose-500/20 text-rose-400 border-rose-500/30 animate-pulse' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'}`}>
+            <Activity size={12} />
+            {timeLeft}
+        </div>
+    );
+};
+
 const Dashboard = () => {
     const navigate = useNavigate();
-    const { currentUser, notifications, setNotifications, attendance, requestLetters, setRequestLetters, students, departments, faculty, courses, setTargetCourseId } = useContext(AppContext);
+    const { currentUser, notifications, setNotifications, attendance, requestLetters, setRequestLetters, students, departments, faculty, courses, setTargetCourseId, assignments, calendarEvents } = useContext(AppContext);
     const isAuthorized = currentUser?.role === 'Admin' || currentUser?.role === 'Faculty';
     const [selectedAbsentees, setSelectedAbsentees] = useState(null);
     const [previewLetter, setPreviewLetter] = useState(null);
@@ -188,8 +230,20 @@ const Dashboard = () => {
                                 <BookOpen size={32} />
                             </div>
                             <div>
-                                <h3 className="text-xl font-black text-white tracking-tight uppercase">New Assignment Assigned</h3>
+                                <div className="flex items-center gap-3">
+                                    <h3 className="text-xl font-black text-white tracking-tight uppercase">New Assignment Assigned</h3>
+                                    {assignmentNotifications[0].deadline && (
+                                        <div className="hidden sm:block">
+                                            <CountdownTimer deadline={assignmentNotifications[0].deadline} />
+                                        </div>
+                                    )}
+                                </div>
                                 <p className="text-slate-400 font-medium text-sm mt-1">{assignmentNotifications[0].message}</p>
+                                {assignmentNotifications[0].deadline && (
+                                    <div className="sm:hidden mt-2">
+                                        <CountdownTimer deadline={assignmentNotifications[0].deadline} />
+                                    </div>
+                                )}
                             </div>
                         </div>
                         <div className="flex items-center space-x-4 relative z-10 w-full md:w-auto">
@@ -317,6 +371,85 @@ const Dashboard = () => {
                                 <span className={`text-xs font-bold uppercase tracking-wider ${data.isFuture ? 'text-slate-600' : 'text-slate-400'}`}>{data.day}</span>
                             </div>
                         ))}
+                    </div>
+                </motion.div>
+            </div>
+
+            {/* Academic Calendar Section */}
+            <div className="w-full">
+                <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="w-full glass-card rounded-[2rem] border border-glass-border shadow-glass-card p-8 flex flex-col lg:flex-row gap-8 relative overflow-hidden">
+                    <div className="absolute bottom-0 right-0 w-64 h-64 bg-royal-purple/5 blur-[80px] rounded-full pointer-events-none"></div>
+
+                    {/* Event List */}
+                    <div className="flex-1 space-y-6 relative z-10">
+                        <div className="flex justify-between items-center">
+                            <div>
+                                <h2 className="text-2xl font-bold text-white mb-1">Academic Schedule</h2>
+                                <p className="text-sm font-medium text-slate-400">Upcoming events, exams and holidays.</p>
+                            </div>
+                            <Calendar className="text-royal-purple" size={24} />
+                        </div>
+
+                        <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                            {(calendarEvents || []).sort((a, b) => new Date(a.date) - new Date(b.date)).map((event) => (
+                                <div key={event.id} className="group flex items-center justify-between p-4 rounded-2xl bg-slate-900/40 border border-white/5 hover:border-white/10 hover:bg-slate-900/60 transition-all">
+                                    <div className="flex items-center gap-4">
+                                        <div className={`w-2 h-12 rounded-full bg-${event.color || 'royal-purple'}`}></div>
+                                        <div>
+                                            <h4 className="font-bold text-white leading-tight">{event.title}</h4>
+                                            <p className="text-xs text-slate-500 font-semibold mt-1 uppercase tracking-wider">{event.type}</p>
+                                        </div>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="text-sm font-black text-white">{new Date(event.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}</p>
+                                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-tighter">{new Date(event.date).toLocaleDateString('en-IN', { weekday: 'short' })}</p>
+                                    </div>
+                                </div>
+                            ))}
+                            {(!calendarEvents || calendarEvents.length === 0) && (
+                                <div className="text-center py-10 text-slate-500">No upcoming events scheduled.</div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Mini Calendar Visualization */}
+                    <div className="w-full lg:w-80 bg-slate-900/40 rounded-3xl border border-white/5 p-6 relative z-10">
+                        <div className="grid grid-cols-7 gap-2 mb-4 text-center">
+                            {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map(d => (
+                                <span key={d} className="text-[10px] font-black text-slate-600 uppercase">{d}</span>
+                            ))}
+                        </div>
+                        <div className="grid grid-cols-7 gap-2">
+                            {Array.from({ length: 35 }).map((_, i) => {
+                                const day = i - 2; // Rough offset for visualization
+                                const isToday = day === new Date().getDate();
+                                const hasEvent = calendarEvents?.some(e => new Date(e.date).getDate() === day && new Date(e.date).getMonth() === new Date().getMonth());
+                                const isPast = day < new Date().getDate();
+
+                                return (
+                                    <div key={i} className={`
+                                        aspect-square rounded-lg flex items-center justify-center text-[10px] font-bold transition-all relative
+                                        ${day <= 0 || day > 31 ? 'opacity-0' : 'opacity-100'}
+                                        ${isToday ? 'bg-royal-purple text-white shadow-glow-purple scale-110 z-10' : 'text-slate-400'}
+                                        ${hasEvent && !isToday ? 'border border-royal-purple/30 bg-royal-purple/10 text-royal-purple' : ''}
+                                        ${!isToday && !hasEvent ? 'hover:bg-white/5' : ''}
+                                    `}>
+                                        {day > 0 && day <= 31 && day}
+                                        {hasEvent && !isToday && <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-royal-purple"></div>}
+                                    </div>
+                                );
+                            })}
+                        </div>
+                        <div className="mt-6 pt-6 border-t border-white/5 space-y-3">
+                            <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400">
+                                <div className="w-2 h-2 rounded-full bg-royal-purple"></div>
+                                Current Day
+                            </div>
+                            <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400">
+                                <div className="w-2 h-2 rounded-full border border-royal-purple/30 bg-royal-purple/10"></div>
+                                Scheduled Event
+                            </div>
+                        </div>
                     </div>
                 </motion.div>
             </div>

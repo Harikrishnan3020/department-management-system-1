@@ -362,7 +362,8 @@ const Courses = () => {
                                                             id: Date.now() + 1,
                                                             type: 'Assignment',
                                                             message: `New Assignment: ${asgnTitle} for ${selectedCourse.name}`,
-                                                            courseId: selectedCourse.id
+                                                            courseId: selectedCourse.id,
+                                                            deadline: asgnDue
                                                         }, ...prev]);
                                                         alert('Assignment Created!');
                                                         setAsgnTitle(''); setAsgnDesc(''); setAsgnDue(''); setAsgnFiles([]); setShowAsgnForm(false);
